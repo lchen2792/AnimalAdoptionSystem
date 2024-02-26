@@ -1,0 +1,8 @@
+type BasicInformation{
+    species: String,
+    breed: String,
+    age: Int,
+    gender: String,
+    size: Size,
+    neutered: Boolean
+}

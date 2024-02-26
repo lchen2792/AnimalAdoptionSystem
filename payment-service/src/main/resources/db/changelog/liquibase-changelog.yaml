@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-payment-table
+      author: lchen
+      changes:
+        createTable:
+          schema: public
+          tableName: payment
+          columns:
+            - column:
+                name: payment_id
+                type: varchar(255)
+                constraints:
+                  primaryKey: true
+                  nullable: false
+            - column:
+                name: application_id
+                type: varchar(255)
+                constraints:
+                  nullable: false
+            - column:
+                name: user_profile_id
+                type: varchar(255)
+                constraints:
+                  nullable: false
+            - column:
+                name: payment_status
+                type: varchar(255)
+                constraints:
+                  nullable: false
+            - column:
+                name: created_by
+                type: varchar(255)
+                constraints:
+                  nullable: false
+            - column:
+                name: version
+                type: bigint
+                constraints:
+                  nullable: false
+            - column:
+                name: created_date
+                type: bigint
+                constraints:
+                  nullable: false
+            - column:
+                name: last_modified_date
+                type: bigint
+                constraints:
+                  nullable: false

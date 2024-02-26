@@ -1,0 +1,17 @@
+server:
+  port: 9091
+
+spring:
+  application:
+    name: animal-service
+  servlet:
+    multipart:
+      enabled: true
+  data:
+    mongodb:
+      uri: mongodb+srv://root:root@cluster0.gf4mguw.mongodb.net/?retryWrites=true&w=majority
+      database: cluster0
+      port: 271017
+  graphql:
+    graphiql:
+      enabled: true

@@ -1,0 +1,6 @@
+enum AnimalStatus {
+    OPEN,
+    RESERVED,
+    ADOPTED,
+    CLOSED
+}

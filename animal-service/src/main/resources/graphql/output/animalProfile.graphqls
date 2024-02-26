@@ -1,0 +1,10 @@
+type AnimalProfile {
+    animalProfileId: ID!,
+    status: AnimalStatus,
+    basicInformation: BasicInformation,
+    temperament: Temperament,
+    careRequirements: CareRequirements,
+    photos: [String],
+    medicalConditions: [MedicalCondition],
+    veterinaryRecords: [VeterinaryRecord]
+}

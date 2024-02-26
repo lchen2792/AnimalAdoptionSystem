@@ -1,0 +1,7 @@
+type MedicalCondition {
+    causes: String,
+    symptoms: String,
+    cautions: String,
+    cured: Boolean,
+    documents: [String]
+}

@@ -1,0 +1,8 @@
+type CareRequirements {
+    space: Level,
+    socializing: Level,
+    companionship: Level,
+    exercise: Level,
+    grooming: Level,
+    diet: Level
+}

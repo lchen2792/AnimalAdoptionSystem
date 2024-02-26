@@ -1,0 +1,9 @@
+enum Level {
+    EXTREME_LOW,
+    EXTRA_LOW,
+    LOW,
+    MEDIUM,
+    HIGH,
+    EXTRA_HIGH,
+    EXTREME_HIGH
+}

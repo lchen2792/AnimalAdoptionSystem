@@ -1,0 +1,8 @@
+type VeterinaryRecord {
+    type: String,
+    time: String,
+    prognosis: [String],
+    diagnosis: [String],
+    treatment: [String],
+    documents: [String]
+}

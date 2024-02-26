@@ -1,0 +1,14 @@
+type Query {
+    test: String
+    findAnimalProfileById(animalProfileId: ID!): AnimalProfile,
+    findAnimalProfilesByCriteria(request: FindAnimalProfilesByCriteriaRequest!): [AnimalProfile]
+}
+
+input FindAnimalProfilesByCriteriaRequest{
+    species: String,
+    breed: String,
+    ageMin: Int,
+    ageMax: Int,
+    gender: String,
+    neutered: Boolean
+}

@@ -1,0 +1,11 @@
+type Temperament {
+    sociability: Level,
+    activity: Level,
+    trainability: Level,
+    stability: Level,
+    aggressivity: Level,
+    independency: Level,
+    adaptability: Level,
+    preyDrive: Level,
+    communication: Level
+}
