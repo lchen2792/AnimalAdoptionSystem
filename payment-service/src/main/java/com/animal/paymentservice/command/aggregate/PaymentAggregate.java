@@ -2,6 +2,7 @@ package com.animal.paymentservice.command.aggregate;
 
 import com.animal.paymentservice.command.model.ProcessPaymentCommand;
 import com.animal.paymentservice.command.model.ReversePaymentCommand;
+import com.animal.paymentservice.data.model.PaymentDetail;
 import com.animal.paymentservice.data.model.PaymentStatus;
 import com.animal.paymentservice.event.model.PaymentProcessedEvent;
 import com.animal.paymentservice.event.model.PaymentReversedEvent;
@@ -19,6 +20,7 @@ public class PaymentAggregate {
     private String paymentId;
     private String applicationId;
     private String userProfileId;
+    private PaymentDetail paymentDetail;
     private PaymentStatus paymentStatus;
 
     @CommandHandler
@@ -30,6 +32,7 @@ public class PaymentAggregate {
                 .userProfileId(command.getUserProfileId())
                 .paymentStatus(PaymentStatus.PROCESSED)
                 .build();
+        //todo integrate stripe api
         AggregateLifecycle.apply(event);
     }
 

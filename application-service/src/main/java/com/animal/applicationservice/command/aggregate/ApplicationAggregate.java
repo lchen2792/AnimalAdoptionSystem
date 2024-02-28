@@ -90,6 +90,12 @@ public class ApplicationAggregate {
     }
 
     @CommandHandler
+    public void handle(ReviewApplicationCommand command) {
+        //todo
+        //AggregateLifecycle.apply(event);
+    }
+
+    @CommandHandler
     public void handle(UndoReviewCommand command) {
         ReviewUndoneEvent event = ReviewUndoneEvent
                 .builder()

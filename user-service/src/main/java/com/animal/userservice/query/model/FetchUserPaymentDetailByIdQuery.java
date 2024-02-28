@@ -7,6 +7,6 @@ import java.io.Serializable;
 
 @Data
 @Builder
-public class FetchUserProfileByIdQuery implements Serializable {
+public class FetchUserPaymentDetailByIdQuery implements Serializable {
     private String userId;
 }

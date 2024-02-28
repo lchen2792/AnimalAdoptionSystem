@@ -1,7 +1,10 @@
 package com.animal.applicationservice.controller;
 
+import com.animal.applicationservice.command.model.ApproveApplicationCommand;
 import com.animal.applicationservice.command.model.CreateApplicationCommand;
+import com.animal.applicationservice.command.model.RejectApplicationCommand;
 import com.animal.applicationservice.controller.model.CreateApplicationRequest;
+import com.animal.applicationservice.controller.model.ReviewApplicationRequest;
 import com.animal.applicationservice.data.model.Application;
 import com.animal.applicationservice.data.repository.ApplicationRepository;
 import com.animal.applicationservice.exception.ApplicationLimitException;
@@ -85,5 +88,17 @@ public class ApplicationController {
                 .onErrorResume(IllegalArgumentException.class,
                         err -> Mono.just(ResponseEntity.badRequest().body(err.getMessage()))
                 );
+    }
+
+    @PutMapping("/review")
+    public Mono<ResponseEntity<String>> reviewApplication(@RequestBody ReviewApplicationRequest request){
+            return commandGateway
+                    .send(request.getApprove()
+                            ? ApproveApplicationCommand.builder().applicationId(request.getApplicationId()).build()
+                            : RejectApplicationCommand.builder().applicationId(request.getApplicationId()).message(request.getComment()).build()
+                    )
+                    .switchIfEmpty(Mono.error(new IllegalArgumentException(request.getApplicationId())))
+                    .map(res -> ResponseEntity.ok(res.toString()))
+                    .onErrorResume(err -> Mono.just(ResponseEntity.internalServerError().body(err.getMessage())));
     }
 }

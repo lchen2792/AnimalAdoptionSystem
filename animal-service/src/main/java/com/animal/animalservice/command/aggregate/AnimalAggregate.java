@@ -110,6 +110,26 @@ public class AnimalAggregate {
     }
 
     @CommandHandler
+    public void handle(ReleaseAnimalForRejectionCommand command) {
+        if (!AnimalStatus.RESERVED.equals(this.status)) {
+            throw new AnimalStatusNotMatchException(command.getAnimalProfileId(), AnimalStatus.RESERVED, this.status);
+        }
+
+        AggregateLifecycle.apply(AnimalReleasedForRejectionEvent
+                .builder()
+                .animalProfileId(command.getAnimalProfileId())
+                .userProfileId(command.getUserProfileId())
+                .applicationId(command.getApplicationId())
+                .status(AnimalStatus.OPEN)
+                .build());
+    }
+
+    @EventSourcingHandler
+    public void handle(AnimalReleasedForRejectionEvent event) {
+        this.status = event.getStatus();
+    }
+
+    @CommandHandler
     public void handle(AdoptAnimalCommand command) {
         if (!AnimalStatus.RESERVED.equals(this.status)) {
             throw new AnimalStatusNotMatchException(command.getAnimalProfileId(), AnimalStatus.RESERVED, this.status);
