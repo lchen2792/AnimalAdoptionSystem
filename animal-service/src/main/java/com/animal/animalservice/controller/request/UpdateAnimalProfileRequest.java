@@ -15,7 +15,6 @@ public class UpdateAnimalProfileRequest {
     private BasicInformation basicInformation;
     private Temperament temperament;
     private CareRequirements careRequirements;
-    private List<Binary> photos;
     private List<MedicalCondition> medicalConditions;
     private List<VeterinaryRecord> veterinaryRecords;
 }

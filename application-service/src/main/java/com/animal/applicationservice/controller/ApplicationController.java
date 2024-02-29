@@ -20,8 +20,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 
 import java.util.UUID;
 
@@ -34,6 +37,8 @@ public class ApplicationController {
     private transient ReactorCommandGateway commandGateway;
     @Autowired
     private transient ApplicationRepository applicationRepository;
+    @Autowired
+    private transient Flux<ServerSentEvent<String>> reviewNotificationFlux;
     @Value("${application.count.max}")
     private Integer MAX_APPLICATION_COUNT;
 
@@ -100,5 +105,10 @@ public class ApplicationController {
                     .switchIfEmpty(Mono.error(new IllegalArgumentException(request.getApplicationId())))
                     .map(res -> ResponseEntity.ok(res.toString()))
                     .onErrorResume(err -> Mono.just(ResponseEntity.internalServerError().body(err.getMessage())));
+    }
+
+    @GetMapping(value = "/review/notification")
+    public Flux<ServerSentEvent<String>> notifyApplicationReview(){
+        return reviewNotificationFlux;
     }
 }

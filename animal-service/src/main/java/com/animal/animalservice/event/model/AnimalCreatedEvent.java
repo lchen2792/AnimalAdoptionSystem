@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.bson.types.Binary;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -19,7 +20,7 @@ public class AnimalCreatedEvent implements Serializable {
     private BasicInformation basicInformation;
     private Temperament temperament;
     private CareRequirements careRequirements;
-    private List<Binary> photos;
+    private List<String> media = new ArrayList<>();
     private List<MedicalCondition> medicalConditions;
     private List<VeterinaryRecord> veterinaryRecords;
     private AnimalStatus status;

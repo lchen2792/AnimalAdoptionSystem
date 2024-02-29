@@ -7,19 +7,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.Binary;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AnimalUpdatedEvent {
+public class AnimalUpdatedEvent implements Serializable {
     private String animalProfileId;
     private AnimalStatus status;
     private BasicInformation basicInformation;
     private Temperament temperament;
     private CareRequirements careRequirements;
-    private List<Binary> photos;
     private List<MedicalCondition> medicalConditions;
     private List<VeterinaryRecord> veterinaryRecords;
 }

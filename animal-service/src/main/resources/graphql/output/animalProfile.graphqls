@@ -4,7 +4,7 @@ type AnimalProfile {
     basicInformation: BasicInformation,
     temperament: Temperament,
     careRequirements: CareRequirements,
-    photos: [String],
+    media: [String],
     medicalConditions: [MedicalCondition],
     veterinaryRecords: [VeterinaryRecord]
 }

@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class UserProfileService {
 
@@ -29,11 +31,7 @@ public class UserProfileService {
     }
 
     public String updateUserProfile(UserProfile userProfile) {
-        return userProfileRepository
-                .findById(userProfile.getUserProfileId())
-                .map(userProfileRepository::save)
-                .map(UserProfile::getUserProfileId)
-                .orElseThrow(() -> new UserProfileNotFoundException(userProfile.getUserProfileId()));
+        return userProfileRepository.save(userProfile).getUserProfileId();
     }
 
     public String deleteUserProfile(String userProfileId) {

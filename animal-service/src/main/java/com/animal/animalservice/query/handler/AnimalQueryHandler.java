@@ -51,7 +51,7 @@ public class AnimalQueryHandler {
 
         Query fetchAnimalProfilesByCriteriaQuery = new Query(criteria);
         fetchAnimalProfilesByCriteriaQuery.fields()
-                .exclude("photos")
+                .exclude("media")
                 .exclude("medicalConditions")
                 .exclude("veterinaryRecords");
 

@@ -20,7 +20,7 @@ public class AnimalProfile implements Serializable {
     private BasicInformation basicInformation;
     private Temperament temperament;
     private CareRequirements careRequirements;
-    private List<String> photos;
+    private List<String> media;
     private List<MedicalCondition> medicalConditions;
     private List<VeterinaryRecord> veterinaryRecords;
     @Version

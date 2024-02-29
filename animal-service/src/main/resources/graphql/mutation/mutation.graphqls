@@ -1,14 +1,18 @@
- type Mutation {
+scalar Upload
+
+type Mutation {
     createAnimalProfile(request: CreateAnimalProfileRequest!): String
     updateAnimalProfileById(request: UpdateAnimalProfileRequest!): String
     deleteAnimalProfileById(animalProfileId: ID!): String
+    uploadAnimalMedia(animalProfileId: ID!, files: Upload!, mediaType: String!): String
+    deleteAnimalMedia(animalProfileId: ID!, mediaId: ID!): String
 }
 
 input CreateAnimalProfileRequest {
     basicInformation: BasicInformationInput,
     temperament: TemperamentInput,
     careRequirements: CareRequirementsInput,
-    photos: [String],
+    media: [String],
     medicalConditions: [MedicalConditionInput],
     veterinaryRecords: [VeterinaryRecordInput]
 }
@@ -19,7 +23,7 @@ input UpdateAnimalProfileRequest {
     basicInformation: BasicInformationInput,
     temperament: TemperamentInput,
     careRequirements: CareRequirementsInput,
-    photos: [String],
+    media: [String],
     medicalConditions: [MedicalConditionInput],
     veterinaryRecords: [VeterinaryRecordInput]
 }

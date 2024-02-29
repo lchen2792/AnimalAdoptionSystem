@@ -9,6 +9,11 @@ import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.codec.ServerSentEvent;
+import reactor.core.publisher.Sinks;
+
+import java.util.UUID;
 
 @Aggregate
 public class ApplicationAggregate {
@@ -17,6 +22,8 @@ public class ApplicationAggregate {
     private String userProfileId;
     private String animalProfileId;
     private ApplicationStatus applicationStatus;
+    @Autowired
+    private Sinks.Many<ServerSentEvent<String>> reviewNotificationSink;
 
     @CommandHandler
     public ApplicationAggregate(CreateApplicationCommand command){
@@ -91,8 +98,13 @@ public class ApplicationAggregate {
 
     @CommandHandler
     public void handle(ReviewApplicationCommand command) {
-        //todo
-        //AggregateLifecycle.apply(event);
+        reviewNotificationSink.tryEmitNext(ServerSentEvent
+                .<String>builder()
+                .id(UUID.randomUUID().toString())
+                .event("review application notification")
+                .data(String.format(command.getApplicationId()))
+                .build()
+        );
     }
 
     @CommandHandler

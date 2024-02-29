@@ -10,12 +10,9 @@ import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
-import org.bson.types.Binary;
 import org.springframework.beans.BeanUtils;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 @Aggregate
 @NoArgsConstructor
@@ -25,7 +22,7 @@ public class AnimalAggregate {
     private BasicInformation basicInformation;
     private Temperament temperament;
     private CareRequirements careRequirements;
-    private List<Binary> photos;
+    private List<String> media;
     private List<MedicalCondition> medicalConditions;
     private List<VeterinaryRecord> veterinaryRecords;
     private AnimalStatus status;
@@ -44,7 +41,7 @@ public class AnimalAggregate {
         this.basicInformation = event.getBasicInformation();
         this.temperament = event.getTemperament();
         this.careRequirements = event.getCareRequirements();
-        this.photos = event.getPhotos();
+        this.media = event.getMedia();
         this.medicalConditions = event.getMedicalConditions();
         this.veterinaryRecords = event.getVeterinaryRecords();
         this.status = event.getStatus();
@@ -63,7 +60,6 @@ public class AnimalAggregate {
         this.basicInformation = event.getBasicInformation();
         this.temperament = event.getTemperament();
         this.careRequirements = event.getCareRequirements();
-        this.photos = event.getPhotos();
         this.medicalConditions = event.getMedicalConditions();
         this.veterinaryRecords = event.getVeterinaryRecords();
         this.status = event.getStatus();
@@ -161,5 +157,37 @@ public class AnimalAggregate {
     @EventSourcingHandler
     public void handle(AnimalDeletedEvent event){
         AggregateLifecycle.markDeleted();
+    }
+
+    @CommandHandler
+    public void handle(UploadAnimalMediaCommand command) {
+        AnimalMediaUploadedEvent event = AnimalMediaUploadedEvent
+                .builder()
+                .animalProfileId(command.getAnimalProfileId())
+                .mediaId(command.getMediaId())
+                .build();
+
+        AggregateLifecycle.apply(event);
+    }
+
+    @EventSourcingHandler
+    public void handle(AnimalMediaUploadedEvent event) {
+        this.media.add(event.getMediaId());
+    }
+
+    @CommandHandler
+    public void handle(DeleteAnimalMediaCommand command) {
+        AnimalMediaDeletedEvent event = AnimalMediaDeletedEvent
+                .builder()
+                .animalProfileId(command.getAnimalProfileId())
+                .mediaId(command.getMediaId())
+                .build();
+
+        AggregateLifecycle.apply(event);
+    }
+
+    @EventSourcingHandler
+    public void handle(AnimalMediaDeletedEvent event) {
+        this.media.remove(event.getMediaId());
     }
 }
