@@ -25,7 +25,7 @@ public class UserProfile {
     private Knowledge knowledge;
     private Personality personality;
     private List<Binary> identifications;
-    private PaymentDetail paymentDetail;
+    private String customerId;
     @Version
     private Long version;
     @CreatedDate

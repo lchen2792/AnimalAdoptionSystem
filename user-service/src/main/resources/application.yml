@@ -1,5 +1,5 @@
 server:
-  port: 9092
+  port: 9093
 
 spring:
   application:
@@ -12,3 +12,28 @@ spring:
       uri: mongodb+srv://root:root@cluster0.gf4mguw.mongodb.net/?retryWrites=true&w=majority
       database: cluster0
       port: 271017
+
+resilience4j:
+  circuitbreaker:
+    circuitbreaker-aspect-order: 1
+    instances:
+      payment-service:
+        failureRateThreshold: 50
+        permittedNumberOfCallsInHalfOpenState: 4
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 4
+        waitDurationInOpenState: 25s
+  retry:
+    retry-aspect-order: 2
+    instances:
+      payment-service:
+        max-retry-Attempts: 5
+        wait-duration: 1s
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
+        register-health-indicator: true
+
+web-client:
+  base-url: http://localhost:9092
+  # base-url: http://localhost:9000/payment-service

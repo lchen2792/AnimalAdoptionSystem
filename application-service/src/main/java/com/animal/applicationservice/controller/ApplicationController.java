@@ -24,8 +24,9 @@ import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.Sinks;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @RestController
@@ -109,6 +110,8 @@ public class ApplicationController {
 
     @GetMapping(value = "/review/notification")
     public Flux<ServerSentEvent<String>> notifyApplicationReview(){
-        return reviewNotificationFlux;
+        Flux<ServerSentEvent<String>> heartBeats = Flux.interval(Duration.of(20, ChronoUnit.SECONDS))
+                .map(sequence -> ServerSentEvent.<String>builder().data("new hear beat").build());
+        return reviewNotificationFlux.mergeWith(heartBeats);
     }
 }

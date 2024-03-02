@@ -1,13 +1,18 @@
 spring:
+  application:
+    name: payment-service
   r2dbc:
     url: r2dbc:mysql://localhost:3306/payment_store
     username: root
     password: root
   liquibase:
-    change-log: classpath:db.changelog/liquibase-changelog.yaml
+    change-log: classpath:db/changelog/liquibase-changelog.yaml
     url: jdbc:mysql://localhost:3306/payment_store
     user: root
     password: root
 
 server:
   port: 9092
+
+stripe:
+  secret-key: sk_test_4eC39HqLyjWDarjtT1zdp7dc

@@ -4,10 +4,10 @@ import com.animal.applicationservice.command.model.*;
 import com.animal.applicationservice.data.model.Application;
 import com.animal.applicationservice.data.model.ApplicationStatus;
 import com.animal.applicationservice.data.model.ApplicationStatusSummary;
-import com.animal.applicationservice.data.model.PaymentDetail;
 import com.animal.applicationservice.event.model.*;
 import com.animal.applicationservice.query.model.FetchApplicationByIdQuery;
 import com.animal.applicationservice.query.model.FetchApplicationStatusSummaryQuery;
+import com.animal.applicationservice.query.model.FetchUserPaymentMethodByUserProfileIdQuery;
 import org.axonframework.extensions.reactor.commandhandling.gateway.ReactorCommandGateway;
 import org.axonframework.extensions.reactor.queryhandling.gateway.ReactorQueryGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
@@ -68,15 +68,15 @@ public class ApplicationSaga {
         paymentId = paymentId == null ? UUID.randomUUID().toString() : paymentId;
         queryGateway
                 .query(
-                        FetchApplicationStatusSummaryQuery.builder().applicationId(event.getApplicationId()).build(),
-                        ResponseTypes.instanceOf(PaymentDetail.class)
+                        FetchUserPaymentMethodByUserProfileIdQuery.builder().userProfileId(event.getUserProfileId()).build(),
+                        ResponseTypes.instanceOf(String.class)
                 )
-                .map(paymentDetail -> ProcessPaymentCommand
+                .map(customerId -> ProcessPaymentCommand
                         .builder()
                         .applicationId(event.getApplicationId())
                         .paymentId(paymentId)
                         .userProfileId(event.getUserProfileId())
-                        .paymentDetail(paymentDetail)
+                        .customerId(customerId)
                         .build()
                 )
                 .flatMap(processPaymentCommand -> commandGateway.send(processPaymentCommand))

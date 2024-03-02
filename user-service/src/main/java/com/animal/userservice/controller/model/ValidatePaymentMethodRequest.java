@@ -1,14 +1,11 @@
-package com.animal.applicationservice.data.model;
+package com.animal.userservice.controller.model;
 
 import lombok.Builder;
 import lombok.Data;
 
-import java.io.Serializable;
-
 @Data
 @Builder
-public class PaymentDetail implements Serializable {
-    private String userId;
+public class ValidatePaymentMethodRequest {
     private String cardholderName;
     private String cardNumber;
     private Integer validThruYear;

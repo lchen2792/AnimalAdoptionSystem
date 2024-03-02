@@ -2,7 +2,6 @@ package com.animal.paymentservice.command.aggregate;
 
 import com.animal.paymentservice.command.model.ProcessPaymentCommand;
 import com.animal.paymentservice.command.model.ReversePaymentCommand;
-import com.animal.paymentservice.data.model.PaymentDetail;
 import com.animal.paymentservice.data.model.PaymentStatus;
 import com.animal.paymentservice.event.model.PaymentProcessedEvent;
 import com.animal.paymentservice.event.model.PaymentReversedEvent;
@@ -20,7 +19,7 @@ public class PaymentAggregate {
     private String paymentId;
     private String applicationId;
     private String userProfileId;
-    private PaymentDetail paymentDetail;
+    private String customerId;
     private PaymentStatus paymentStatus;
 
     @CommandHandler
@@ -30,6 +29,7 @@ public class PaymentAggregate {
                 .paymentId(command.getPaymentId())
                 .applicationId(command.getApplicationId())
                 .userProfileId(command.getUserProfileId())
+                .customerId(command.getCustomerId())
                 .paymentStatus(PaymentStatus.PROCESSED)
                 .build();
         //todo integrate stripe api
@@ -42,10 +42,12 @@ public class PaymentAggregate {
         this.applicationId = event.getApplicationId();
         this.userProfileId = event.getUserProfileId();
         this.paymentStatus = event.getPaymentStatus();
+        this.customerId = event.getCustomerId();
     }
 
     @CommandHandler
     public void on(ReversePaymentCommand command) {
+        //todo integrate stripe api
         PaymentReversedEvent event = PaymentReversedEvent
                 .builder()
                 .paymentId(command.getPaymentId())
