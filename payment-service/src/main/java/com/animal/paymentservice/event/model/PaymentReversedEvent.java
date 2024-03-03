@@ -16,6 +16,8 @@ public class PaymentReversedEvent implements Serializable {
     private String paymentId;
     private String applicationId;
     private String userProfileId;
+    private String customerId;
+    private String paymentIntentId;
     private PaymentStatus paymentStatus;
     private String message;
 }

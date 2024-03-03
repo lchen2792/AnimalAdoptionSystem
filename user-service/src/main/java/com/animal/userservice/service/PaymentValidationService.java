@@ -26,7 +26,7 @@ public class PaymentValidationService {
     public CompletableFuture<String> validatePayment(ValidatePaymentMethodRequest validatePaymentMethodRequest) {
         return webClient
                 .post()
-                .uri("/payment/validation")
+                .uri("/validate-payment")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromPublisher(Mono.just(validatePaymentMethodRequest), ValidatePaymentMethodRequest.class))
                 .retrieve()

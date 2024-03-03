@@ -20,6 +20,10 @@ public class PaymentEventHandler {
         Payment payment = Payment.builder()
                 .paymentId(event.getPaymentId())
                 .paymentStatus(event.getPaymentStatus())
+                .customerId(event.getCustomerId())
+                .paymentIntentId(event.getPaymentIntentId())
+                .paymentStatus(event.getPaymentStatus())
+                .userProfileId(event.getUserProfileId())
                 .build();
         paymentRepository.save(payment).subscribe();
     }

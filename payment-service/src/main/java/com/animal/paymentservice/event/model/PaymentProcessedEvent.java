@@ -17,5 +17,6 @@ public class PaymentProcessedEvent implements Serializable {
     private String applicationId;
     private String userProfileId;
     private String customerId;
+    private String paymentIntentId;
     private PaymentStatus paymentStatus;
 }

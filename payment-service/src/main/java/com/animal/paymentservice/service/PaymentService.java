@@ -3,10 +3,8 @@ package com.animal.paymentservice.service;
 import com.animal.paymentservice.controller.model.ValidatePaymentMethodRequest;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
-import com.stripe.model.Customer;
-import com.stripe.model.PaymentMethod;
-import com.stripe.param.CustomerCreateParams;
-import com.stripe.param.PaymentMethodCreateParams;
+import com.stripe.model.*;
+import com.stripe.param.*;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +16,6 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class PaymentService {
-
     @Value("${stripe.secret-key}")
     private String secretKey;
 
@@ -52,6 +49,50 @@ public class PaymentService {
         } catch (StripeException e) {
             log.error(e.getMessage());
             return Mono.empty();
+        }
+    }
+
+    public Mono<String> processPayment(String customerId, Long amount) {
+        try {
+            Customer customer = Customer.retrieve(customerId);
+            PaymentMethod paymentMethod = customer.listPaymentMethods().getData().get(0);
+            PaymentIntentCreateParams params =
+                    PaymentIntentCreateParams.builder()
+                            .setCustomer(customerId)
+                            .setAmount(amount)
+                            .setCurrency("usd")
+                            .setPaymentMethod(paymentMethod.getId())
+                            .setAutomaticPaymentMethods(
+                                    PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
+                                            .setEnabled(true)
+                                            .build()
+                            )
+                            .build();
+            PaymentIntent paymentIntent = PaymentIntent.create(params);
+            return Mono.just(paymentIntent.getId());
+        } catch (StripeException e){
+            log.error(e.getMessage());
+            return Mono.empty();
+        }
+    }
+
+    public Mono<Boolean> confirmPayment(String paymentIntentId) {
+        try {
+            PaymentIntent.retrieve(paymentIntentId).confirm();
+            return Mono.just(true);
+        } catch (StripeException e){
+            log.error(e.getMessage());
+            return Mono.just(false);
+        }
+    }
+
+    public Mono<Boolean> revertPayment(String paymentIntentId) {
+        try{
+            PaymentIntent.retrieve(paymentIntentId).cancel();
+            return Mono.just(true);
+        } catch (StripeException e){
+            log.error(e.getMessage());
+            return Mono.just(false);
         }
     }
 }

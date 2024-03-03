@@ -21,6 +21,10 @@ public class Payment {
     private String applicationId;
     @Column("user_profile_id")
     private String userProfileId;
+    @Column("customer_id")
+    private String customerId;
+    @Column("payment_intent-id")
+    private String paymentIntentId;
     @Column("payment_status")
     private PaymentStatus paymentStatus;
     @Version

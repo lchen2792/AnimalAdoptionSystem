@@ -14,4 +14,5 @@ public class ProcessPaymentCommand implements Serializable {
     private final String applicationId;
     private final String userProfileId;
     private final String customerId;
+    private final String paymentIntentId;
 }

@@ -5,9 +5,11 @@ import com.animal.applicationservice.data.model.Application;
 import com.animal.applicationservice.data.model.ApplicationStatus;
 import com.animal.applicationservice.data.model.ApplicationStatusSummary;
 import com.animal.applicationservice.event.model.*;
+import com.animal.applicationservice.exception.RemoteServiceNotAvailableException;
 import com.animal.applicationservice.query.model.FetchApplicationByIdQuery;
 import com.animal.applicationservice.query.model.FetchApplicationStatusSummaryQuery;
 import com.animal.applicationservice.query.model.FetchUserPaymentMethodByUserProfileIdQuery;
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.extensions.reactor.commandhandling.gateway.ReactorCommandGateway;
 import org.axonframework.extensions.reactor.queryhandling.gateway.ReactorQueryGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
@@ -16,8 +18,13 @@ import org.axonframework.modelling.saga.SagaEventHandler;
 import org.axonframework.modelling.saga.StartSaga;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.axonframework.spring.stereotype.Saga;
+import org.bson.internal.BsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -25,6 +32,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Saga
+@Slf4j
 public class ApplicationSaga {
     @Autowired
     private transient ReactorCommandGateway commandGateway;
@@ -32,10 +40,13 @@ public class ApplicationSaga {
     private transient ReactorQueryGateway queryGateway;
     @Autowired
     private transient QueryUpdateEmitter queryUpdateEmitter;
+    @Autowired
+    private transient WebClient webClient;
     private static String applicationId;
     private static String userProfileId;
     private static String animalProfileId;
     private static String paymentId;
+    private static String paymentIntentId;
 
     @StartSaga
     @SagaEventHandler(associationProperty="applicationId")
@@ -71,12 +82,27 @@ public class ApplicationSaga {
                         FetchUserPaymentMethodByUserProfileIdQuery.builder().userProfileId(event.getUserProfileId()).build(),
                         ResponseTypes.instanceOf(String.class)
                 )
-                .map(customerId -> ProcessPaymentCommand
+                .flatMap(customerId -> webClient
+                        .post()
+                        .uri("/process-payment?customerId=" + customerId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .retrieve()
+                        .bodyToMono(String.class)
+                        .retryWhen(Retry
+                                .backoff(3, Duration.ofSeconds(5))
+                                .jitter(0.75)
+                                .onRetryExhaustedThrow((spec, signal) -> new RemoteServiceNotAvailableException())
+                        )
+                        .zipWith(Mono.just(customerId))
+                )
+                .doOnSuccess(tuple2 -> paymentIntentId = tuple2.getT1())
+                .map(tuple2 -> ProcessPaymentCommand
                         .builder()
                         .applicationId(event.getApplicationId())
                         .paymentId(paymentId)
                         .userProfileId(event.getUserProfileId())
-                        .customerId(customerId)
+                        .customerId(tuple2.getT2())
+                        .paymentIntentId(tuple2.getT1())
                         .build()
                 )
                 .flatMap(processPaymentCommand -> commandGateway.send(processPaymentCommand))
@@ -163,6 +189,21 @@ public class ApplicationSaga {
     @EndSaga
     @SagaEventHandler(associationProperty = "applicationId")
     public void handle(AnimalAdoptedEvent event) {
+        webClient.put()
+                .uri("/confirm-payment?paymentIntentId=" + paymentIntentId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .retryWhen(Retry
+                        .backoff(5, Duration.ofMinutes(1))
+                        .jitter(0.75)
+                        .onRetryExhaustedThrow((spec, signal) -> new RemoteServiceNotAvailableException())
+                )
+                .filter(res -> true)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException()))
+                .doOnError(err -> log.error(err.getMessage()))
+                .subscribe();
+
         queryUpdateEmitter.complete(
                 FetchApplicationStatusSummaryQuery.class,
                 query -> Objects.equals(query.getApplicationId(), event.getApplicationId())
@@ -178,6 +219,22 @@ public class ApplicationSaga {
                 .paymentId(paymentId)
                 .message(event.getMessage())
                 .build();
+
+        webClient
+                .put()
+                .uri("/cancel-payment?paymentIntentId=" + paymentIntentId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .retryWhen(Retry
+                        .backoff(5, Duration.ofMinutes(1))
+                        .jitter(0.75)
+                        .onRetryExhaustedThrow((spec, signal) -> new RemoteServiceNotAvailableException())
+                )
+                .filter(res -> true)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException()))
+                .doOnError(err -> log.error(err.getMessage()))
+                .subscribe();
 
         commandGateway.send(reversePaymentCommand).subscribe();
     }
@@ -268,3 +325,5 @@ public class ApplicationSaga {
         );
     }
 }
+
+

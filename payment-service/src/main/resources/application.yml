@@ -16,3 +16,4 @@ server:
 
 stripe:
   secret-key: sk_test_4eC39HqLyjWDarjtT1zdp7dc
+  application-fee: 60
