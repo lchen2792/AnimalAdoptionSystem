@@ -42,7 +42,7 @@ payment:
 gemini:
   base-url: https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent
   api:
-    key: AIzaSyC6Jxj20yBoELyATmA7kIo1tZw6_D6SlPU
+    key:
 
 animal:
   profile:
