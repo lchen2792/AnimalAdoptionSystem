@@ -34,6 +34,16 @@ resilience4j:
         exponentialBackoffMultiplier: 2
         register-health-indicator: true
 
-web-client:
-  base-url: http://localhost:9092
+payment:
+  validation:
+    base-url: http://localhost:9092
   # base-url: http://localhost:9000/payment-service
+
+gemini:
+  base-url: https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent
+  api:
+    key: AIzaSyC6Jxj20yBoELyATmA7kIo1tZw6_D6SlPU
+
+animal:
+  profile:
+    base-url: http://localhost:9091/graphql

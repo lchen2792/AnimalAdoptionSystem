@@ -5,6 +5,7 @@ import com.animal.userservice.exception.RemoteServiceNotAvailableException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ public class PaymentValidationService {
     private static final String PAYMENT_SERVICE = "payment-service";
     @Autowired
     public WebClient webClient;
+    @Value("${payment.validation.base-url}")
+    private String baseUrl;
 
     @Async
     @Retry(name = PAYMENT_SERVICE)
@@ -26,7 +29,7 @@ public class PaymentValidationService {
     public CompletableFuture<String> validatePayment(ValidatePaymentMethodRequest validatePaymentMethodRequest) {
         return webClient
                 .post()
-                .uri("/validate-payment")
+                .uri(baseUrl + "/validate-payment")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromPublisher(Mono.just(validatePaymentMethodRequest), ValidatePaymentMethodRequest.class))
                 .retrieve()

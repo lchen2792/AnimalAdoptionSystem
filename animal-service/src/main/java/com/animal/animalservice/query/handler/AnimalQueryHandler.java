@@ -1,6 +1,7 @@
 package com.animal.animalservice.query.handler;
 
 import com.animal.animalservice.data.model.AnimalProfile;
+import com.animal.animalservice.data.model.AnimalStatus;
 import com.animal.animalservice.data.repository.AnimalProfileRepository;
 import com.animal.animalservice.exception.AnimalProfileNotFoundException;
 import com.animal.animalservice.query.model.FetchAnimalProfileByIdQuery;
@@ -27,7 +28,7 @@ public class AnimalQueryHandler {
     @QueryHandler
     public List<AnimalProfile> handle(FetchAnimalProfilesByCriteriaQuery query) {
         log.info("handling query {}", query);
-        Criteria criteria = new Criteria();
+        Criteria criteria = new Criteria().and("status").is(AnimalStatus.OPEN);
 
         if (!StringUtils.isEmpty(query.getSpecies())) {
             criteria.and("species").is(query.getSpecies());
