@@ -4,8 +4,6 @@ import com.animal.userservice.controller.model.CreateUserProfileRequest;
 import com.animal.userservice.controller.model.UpdateUserProfileRequest;
 import com.animal.userservice.controller.model.ValidatePaymentMethodRequest;
 import com.animal.userservice.data.model.UserProfile;
-import com.animal.userservice.exception.InvalidPaymentDetailException;
-import com.animal.userservice.exception.RemoteServiceNotAvailableException;
 import com.animal.userservice.service.PaymentValidationService;
 import com.animal.userservice.service.UserProfileService;
 import lombok.extern.slf4j.Slf4j;

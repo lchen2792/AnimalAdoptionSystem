@@ -24,11 +24,24 @@ resilience4j:
         slidingWindowSize: 10
         minimumNumberOfCalls: 4
         waitDurationInOpenState: 25s
+      animal-service:
+        failureRateThreshold: 60
+        permittedNumberOfCallsInHalfOpenState: 4
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        waitDurationInOpenState: 25s
   retry:
     retry-aspect-order: 2
     instances:
       payment-service:
         max-retry-Attempts: 5
+        wait-duration: 1s
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
+        register-health-indicator: true
+      animal-service:
+        max-retry-Attempts: 3
         wait-duration: 1s
         enableExponentialBackoff: true
         exponentialBackoffMultiplier: 2
@@ -42,7 +55,7 @@ payment:
 gemini:
   base-url: https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent
   api:
-    key:
+    key: AIzaSyC6Jxj20yBoELyATmA7kIo1tZw6_D6SlPU
 
 animal:
   profile:

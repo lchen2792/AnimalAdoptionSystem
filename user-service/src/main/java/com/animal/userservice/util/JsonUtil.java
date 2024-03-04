@@ -13,4 +13,12 @@ public class JsonUtil {
             throw new RuntimeException(e);
         }
     }
+
+    public static <T> T readValue(String str, Class<T> classType){
+        try {
+            return objectMapper.readValue(str, classType);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
