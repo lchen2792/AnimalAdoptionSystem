@@ -1,5 +1,4 @@
 type Query {
-    test: String
     findAnimalProfileById(animalProfileId: ID!): AnimalProfile,
     findAnimalProfilesByCriteria(request: FindAnimalProfilesByCriteriaRequest!): [AnimalProfile]
 }

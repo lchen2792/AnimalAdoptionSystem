@@ -1,10 +1,7 @@
 package com.animal.animalservice.command.model;
 
 import com.animal.animalservice.data.model.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 import org.bson.types.Binary;
 

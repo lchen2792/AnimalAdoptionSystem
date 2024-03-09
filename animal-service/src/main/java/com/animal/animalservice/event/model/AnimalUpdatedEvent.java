@@ -16,7 +16,6 @@ import java.util.List;
 @Builder
 public class AnimalUpdatedEvent implements Serializable {
     private String animalProfileId;
-    private AnimalStatus status;
     private BasicInformation basicInformation;
     private Temperament temperament;
     private CareRequirements careRequirements;

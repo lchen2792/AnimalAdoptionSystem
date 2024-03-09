@@ -11,6 +11,7 @@ import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.MediaType;
 
 import java.util.List;
 
@@ -62,7 +63,6 @@ public class AnimalAggregate {
         this.careRequirements = event.getCareRequirements();
         this.medicalConditions = event.getMedicalConditions();
         this.veterinaryRecords = event.getVeterinaryRecords();
-        this.status = event.getStatus();
     }
 
     @CommandHandler

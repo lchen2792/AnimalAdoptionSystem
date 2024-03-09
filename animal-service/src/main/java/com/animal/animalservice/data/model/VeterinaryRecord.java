@@ -1,9 +1,14 @@
 package com.animal.animalservice.data.model;
 
+import lombok.Builder;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+@Data
+@Builder
 public class VeterinaryRecord implements Serializable {
     private String type;
     private String time;

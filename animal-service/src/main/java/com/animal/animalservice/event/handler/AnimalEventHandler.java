@@ -7,6 +7,9 @@ import com.animal.animalservice.exception.AnimalProfileNotFoundException;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,6 +17,8 @@ public class AnimalEventHandler {
 
     @Autowired
     private AnimalProfileRepository animalProfileRepository;
+    @Autowired
+    private GridFsTemplate gridFsTemplate;
 
     @EventHandler
     public void handle(AnimalCreatedEvent event){
@@ -26,89 +31,118 @@ public class AnimalEventHandler {
     public void handle(AnimalUpdatedEvent event) {
         animalProfileRepository
                 .findById(event.getAnimalProfileId())
-                .map(animalProfile -> {
-                    BeanUtils.copyProperties(event, animalProfile);
-                    animalProfileRepository.save(animalProfile);
-                    return animalProfile;
-                })
-                .orElseThrow(() -> new AnimalProfileNotFoundException(event.getAnimalProfileId()));
+                .ifPresentOrElse(
+                        animalProfile -> {
+                            BeanUtils.copyProperties(event, animalProfile);
+                            animalProfileRepository.save(animalProfile);
+                            },
+                        () -> {
+                            throw new AnimalProfileNotFoundException(event.getAnimalProfileId());
+                        }
+                );
     }
 
     @EventHandler
     public void handle(AnimalAdoptedEvent event) {
         animalProfileRepository
                 .findById(event.getAnimalProfileId())
-                .map(animalProfile -> {
-                    animalProfile.setStatus(event.getStatus());
-                    animalProfileRepository.save(animalProfile);
-                    return animalProfile;
-                })
-                .orElseThrow(() -> new AnimalProfileNotFoundException(event.getAnimalProfileId()));
+                .ifPresentOrElse(
+                        animalProfile -> {
+                            animalProfile.setStatus(event.getStatus());
+                            animalProfileRepository.save(animalProfile);
+                            },
+                        () -> {
+                            throw new AnimalProfileNotFoundException(event.getAnimalProfileId());
+                        }
+                );
     }
 
     @EventHandler
     public void handle(AnimalDeletedEvent event){
-        AnimalProfile deletedAnimal = animalProfileRepository
+        animalProfileRepository
                 .findById(event.getAnimalProfileId())
                 .map(animalProfile -> {
                     animalProfileRepository.delete(animalProfile);
                     return animalProfile;
                 })
-                .orElseThrow(() -> new AnimalProfileNotFoundException(event.getAnimalProfileId()));
+                .ifPresentOrElse(
+                        animalProfile -> animalProfile.getMedia().forEach(mediaId -> gridFsTemplate.delete(new Query().addCriteria(Criteria.where("_id").is(mediaId)))),
+                        () -> {throw new AnimalProfileNotFoundException(event.getAnimalProfileId());}
+                );
     }
 
     @EventHandler
     public void handle(AnimalReservedEvent event) {
         animalProfileRepository
                 .findById(event.getAnimalProfileId())
-                .map(animalProfile -> {
-                    animalProfile.setStatus(event.getStatus());
-                    return animalProfileRepository.save(animalProfile);
-                })
-                .orElseThrow(() -> new AnimalProfileNotFoundException(event.getAnimalProfileId()));
+                .ifPresentOrElse(
+                        animalProfile -> {
+                            animalProfile.setStatus(event.getStatus());
+                            animalProfileRepository.save(animalProfile);
+                        },
+                        () -> {
+                            throw new AnimalProfileNotFoundException(event.getAnimalProfileId());
+                        }
+                );
     }
 
     @EventHandler
     public void handle(AnimalReleasedEvent event) {
         animalProfileRepository
                 .findById(event.getAnimalProfileId())
-                .map(animalProfile -> {
-                    animalProfile.setStatus(event.getStatus());
-                    return animalProfileRepository.save(animalProfile);
-                })
-                .orElseThrow(() -> new AnimalProfileNotFoundException(event.getAnimalProfileId()));
+                .ifPresentOrElse(
+                        animalProfile -> {
+                            animalProfile.setStatus(event.getStatus());
+                            animalProfileRepository.save(animalProfile);
+                        },
+                        () -> {
+                            throw new AnimalProfileNotFoundException(event.getAnimalProfileId());
+                        }
+                );
     }
 
     @EventHandler
     public void handle(AnimalReleasedForRejectionEvent event){
         animalProfileRepository
                 .findById(event.getAnimalProfileId())
-                .map(animalProfile -> {
-                    animalProfile.setStatus(event.getStatus());
-                    return animalProfileRepository.save(animalProfile);
-                })
-                .orElseThrow(() -> new AnimalProfileNotFoundException(event.getAnimalProfileId()));
+                .ifPresentOrElse(
+                        animalProfile -> {
+                            animalProfile.setStatus(event.getStatus());
+                            animalProfileRepository.save(animalProfile);
+                        },
+                        () -> {
+                            throw new AnimalProfileNotFoundException(event.getAnimalProfileId());
+                        }
+                );
     }
 
     @EventHandler
     public void handle(AnimalMediaUploadedEvent event) {
         animalProfileRepository
                 .findById(event.getAnimalProfileId())
-                .map(animalProfile -> {
-                    animalProfile.getMedia().add(event.getMediaId());
-                    return animalProfileRepository.save(animalProfile);
-                })
-                .orElseThrow(() -> new AnimalProfileNotFoundException(event.getAnimalProfileId()));
+                .ifPresentOrElse(
+                        animalProfile -> {
+                            animalProfile.getMedia().add(event.getMediaId());
+                            animalProfileRepository.save(animalProfile);
+                        },
+                        () -> {
+                            throw new AnimalProfileNotFoundException(event.getAnimalProfileId());
+                        }
+                );
     }
 
     @EventHandler
     public void handle(AnimalMediaDeletedEvent event) {
         animalProfileRepository
                 .findById(event.getAnimalProfileId())
-                .map(animalProfile -> {
-                    animalProfile.getMedia().remove(event.getMediaId());
-                    return animalProfileRepository.save(animalProfile);
-                })
-                .orElseThrow(() -> new AnimalProfileNotFoundException(event.getAnimalProfileId()));
+                .ifPresentOrElse(
+                        animalProfile -> {
+                            animalProfile.getMedia().remove(event.getMediaId());
+                            animalProfileRepository.save(animalProfile);
+                        },
+                        () -> {
+                            throw new AnimalProfileNotFoundException(event.getAnimalProfileId());
+                        }
+                );
     }
 }

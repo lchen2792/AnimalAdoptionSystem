@@ -6,14 +6,18 @@ import com.animal.animalservice.controller.request.CreateAnimalProfileRequest;
 import com.animal.animalservice.controller.request.FindAnimalProfilesByCriteriaRequest;
 import com.animal.animalservice.controller.request.UpdateAnimalProfileRequest;
 import com.animal.animalservice.data.model.AnimalProfile;
+import com.animal.animalservice.exception.AnimalProfileNotFoundException;
 import com.animal.animalservice.query.model.FetchAnimalProfileByIdQuery;
 import com.animal.animalservice.query.model.FetchAnimalProfilesByCriteriaQuery;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import jdk.jfr.ContentType;
 import lombok.extern.slf4j.Slf4j;
+import org.axonframework.commandhandling.CommandExecutionException;
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.eventsourcing.AggregateDeletedException;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
+import org.axonframework.modelling.command.AggregateNotFoundException;
 import org.axonframework.queryhandling.QueryGateway;
 import org.bson.types.ObjectId;
 import org.checkerframework.checker.units.qual.A;
@@ -48,17 +52,16 @@ public class AnimalProfileController {
     private transient GridFsTemplate gridFsTemplate;
 
     @QueryMapping
-    public CompletableFuture<String>test() {
-        return CompletableFuture.supplyAsync(()-> "test endpoint");
-    }
-
-    @QueryMapping
     public CompletableFuture<AnimalProfile> findAnimalProfileById(@Argument String animalProfileId){
            return queryGateway
                    .query(
                            FetchAnimalProfileByIdQuery.builder().animalProfileId(animalProfileId).build(),
                            ResponseTypes.instanceOf(AnimalProfile.class)
-                   );
+                   )
+                   .exceptionally(err -> {
+                       log.error("animal profile " + err.getMessage() + " not found");
+                       return null;
+                   });
     }
 
     @QueryMapping
@@ -66,7 +69,11 @@ public class AnimalProfileController {
         FetchAnimalProfilesByCriteriaQuery query = new FetchAnimalProfilesByCriteriaQuery();
         BeanUtils.copyProperties(request, query);
         return queryGateway
-                .query(query, ResponseTypes.multipleInstancesOf(AnimalProfile.class));
+                .query(query, ResponseTypes.multipleInstancesOf(AnimalProfile.class))
+                .exceptionally(err -> {
+                    log.error(err.getMessage());
+                    return List.of();
+                });
     }
 
     @MutationMapping
@@ -76,7 +83,12 @@ public class AnimalProfileController {
                 .animalProfileId(UUID.randomUUID().toString())
                 .build();
         BeanUtils.copyProperties(request, command);
-        return commandGateway.send(command).thenApplyAsync(result -> command.getAnimalProfileId());
+        return commandGateway.send(command)
+                .thenApply(result -> command.getAnimalProfileId())
+                .exceptionally(err -> {
+                    log.error(err.getMessage());
+                    return null;
+                });
     }
 
     @MutationMapping
@@ -85,58 +97,21 @@ public class AnimalProfileController {
         BeanUtils.copyProperties(request, command);
         return commandGateway
                 .send(command)
-                .thenApplyAsync(res -> request.getAnimalProfileId());
+                .thenApply(res -> request.getAnimalProfileId())
+                .exceptionally(err -> {
+                    log.error(err.getMessage());
+                    return null;
+                });
     }
 
     @MutationMapping
     public CompletableFuture<String> deleteAnimalProfileById(@Argument String animalProfileId){
         return commandGateway
                 .send(DeleteAnimalCommand.builder().animalProfileId(animalProfileId).build())
-                .thenApplyAsync(res -> animalProfileId);
-    }
-
-    @MutationMapping
-    public CompletableFuture<String> uploadAnimalMedia(@Argument String animalProfileId, @Argument MultipartFile file, @Argument String mediaType) {
-        return CompletableFuture
-                .supplyAsync(() -> {
-                    InputStream inputStream = null;
-                    try {
-                        inputStream = file.getInputStream();
-                    } catch (IOException e) {
-                        log.error(e.getMessage());
-                        throw new RuntimeException(e);
-                    }
-                    DBObject metadata = new BasicDBObject();
-                    metadata.put("animalProfileId", animalProfileId);
-                    metadata.put("timeStamp", Instant.now().toEpochMilli());
-                    metadata.put("mediaType", mediaType);
-                    return gridFsTemplate.store(inputStream, metadata).toString();
-                })
-                .thenComposeAsync(mediaId -> {
-                    UploadAnimalMediaCommand command = UploadAnimalMediaCommand
-                            .builder()
-                            .mediaId(mediaId)
-                            .animalProfileId(animalProfileId)
-                            .build();
-                    return commandGateway.send(command);
-                })
-                .thenApply(res -> {
-                    if (res == null) {
-                        log.error("animal aggregate not updated");
-                    }
-                    return "file uploaded";
-                })
-                .exceptionally(err -> "file not uploaded");
-    }
-
-    @MutationMapping
-    public CompletableFuture<String> deleteAnimalMedia(@Argument String animalProfileId, @Argument String mediaId){
-        gridFsTemplate.delete(new Query().addCriteria(Criteria.where("_id").is(mediaId)));
-        DeleteAnimalMediaCommand command = DeleteAnimalMediaCommand
-                .builder()
-                .animalProfileId(animalProfileId)
-                .mediaId(mediaId)
-                .build();
-        return commandGateway.send(command).thenApplyAsync(res -> mediaId);
+                .thenApply(res -> animalProfileId)
+                .exceptionally(err -> {
+                    log.error(err.getMessage());
+                    return null;
+                });
     }
 }
