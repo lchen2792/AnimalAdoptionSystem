@@ -1,5 +1,6 @@
 package com.animal.applicationservice.config;
 
+import com.animal.applicationservice.controller.model.Notification;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.codec.ServerSentEvent;
@@ -13,12 +14,12 @@ import java.util.UUID;
 public class SinkConfig {
 
     @Bean
-    public Sinks.Many<ServerSentEvent<String>> sink(){
+    public Sinks.Many<ServerSentEvent<Notification>> sink(){
         return Sinks.many().multicast().onBackpressureBuffer(Queues.SMALL_BUFFER_SIZE, false);
     }
 
     @Bean
-    public Flux<ServerSentEvent<String>> broadcast(Sinks.Many<ServerSentEvent<String>> sink){
+    public Flux<ServerSentEvent<Notification>> broadcast(Sinks.Many<ServerSentEvent<Notification>> sink){
         return sink.asFlux();
     }
 }

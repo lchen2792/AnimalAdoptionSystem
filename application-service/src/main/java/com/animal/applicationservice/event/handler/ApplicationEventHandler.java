@@ -37,10 +37,9 @@ public class ApplicationEventHandler {
         applicationRepository
                 .findById(event.getApplicationId())
                 .switchIfEmpty(Mono.error(new IllegalArgumentException(event.getApplicationId())))
-                .map(e -> {
+                .flatMap(e -> {
                     e.setApplicationStatus(event.getApplicationStatus());
-                    applicationRepository.save(e);
-                    return e;
+                    return applicationRepository.save(e);
                 })
                 .subscribe();
     }
@@ -50,10 +49,9 @@ public class ApplicationEventHandler {
         applicationRepository
                 .findById(event.getApplicationId())
                 .switchIfEmpty(Mono.error(new IllegalArgumentException(event.getApplicationId())))
-                .map(e -> {
+                .flatMap(e -> {
                     e.setApplicationStatus(event.getApplicationStatus());
-                    applicationRepository.save(e);
-                    return e;
+                    return applicationRepository.save(e);
                 })
                 .subscribe();
     }
@@ -63,10 +61,9 @@ public class ApplicationEventHandler {
         applicationRepository
                 .findById(event.getApplicationId())
                 .switchIfEmpty(Mono.error(new IllegalArgumentException(event.getApplicationId())))
-                .map(e -> {
+                .flatMap(e -> {
                     e.setApplicationStatus(event.getApplicationStatus());
-                    applicationRepository.save(e);
-                    return e;
+                    return applicationRepository.save(e);
                 })
                 .subscribe();
     }

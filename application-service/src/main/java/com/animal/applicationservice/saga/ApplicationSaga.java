@@ -18,11 +18,9 @@ import org.axonframework.modelling.saga.SagaEventHandler;
 import org.axonframework.modelling.saga.StartSaga;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.axonframework.spring.stereotype.Saga;
-import org.bson.internal.BsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
@@ -51,6 +49,7 @@ public class ApplicationSaga {
     @StartSaga
     @SagaEventHandler(associationProperty="applicationId")
     public void handle(ApplicationCreatedEvent event){
+        log.info("application created");
         applicationId = event.getApplicationId();
         userProfileId = event.getUserProfileId();
         animalProfileId = event.getAnimalProfileId();
@@ -64,6 +63,7 @@ public class ApplicationSaga {
                 .send(reserveAnimalCommand)
                 .switchIfEmpty(Mono.error(new IllegalArgumentException()))
                 .onErrorResume(err -> {
+                    log.error("failed to reserve animal: {}", err.getMessage());
                     CancelApplicationCommand cancelApplicationCommand = CancelApplicationCommand
                             .builder()
                             .applicationId(event.getApplicationId())
@@ -76,6 +76,7 @@ public class ApplicationSaga {
 
     @SagaEventHandler(associationProperty = "applicationId")
     public void handle(AnimalReservedEvent event){
+        log.info("animal reserved");
         paymentId = paymentId == null ? UUID.randomUUID().toString() : paymentId;
         queryGateway
                 .query(
@@ -109,6 +110,7 @@ public class ApplicationSaga {
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("process payment result not found")))
                 .timeout(Duration.of(30, ChronoUnit.SECONDS))
                 .onErrorResume(err -> {
+                    log.error("failed to process payment: {}", err.getMessage());
                     ReleaseAnimalCommand releaseAnimalCommand = ReleaseAnimalCommand
                             .builder()
                             .applicationId(event.getApplicationId())
@@ -123,6 +125,7 @@ public class ApplicationSaga {
 
     @SagaEventHandler(associationProperty = "applicationId")
     public void handle(PaymentProcessedEvent event) {
+        log.info("payment processed");
         queryUpdateEmitter.emit(
                 FetchApplicationStatusSummaryQuery.class,
                 query -> Objects.equals(query.getApplicationId(), event.getApplicationId()),
@@ -139,6 +142,7 @@ public class ApplicationSaga {
                 .send(reviewApplicationCommand)
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("application not found")))
                 .onErrorResume(err -> {
+                    log.error("failed to review application: {}", err.getMessage());
                     ReversePaymentCommand reversePaymentCommand =
                             ReversePaymentCommand
                                     .builder()
@@ -154,6 +158,7 @@ public class ApplicationSaga {
 
     @SagaEventHandler(associationProperty = "applicationId")
     public void handle(ApplicationApprovedEvent event){
+        log.info("application approved");
         queryUpdateEmitter.emit(
                 FetchApplicationStatusSummaryQuery.class,
                 query -> Objects.equals(query.getApplicationId(), event.getApplicationId()),
@@ -176,6 +181,7 @@ public class ApplicationSaga {
                     return commandGateway.send(adoptAnimalCommand);
                 })
                 .onErrorResume(err -> {
+                    log.error("failed to adopt animal: {}", err.getMessage());
                     UndoReviewCommand undoReviewCommand = UndoReviewCommand
                             .builder()
                             .applicationId(event.getApplicationId())
@@ -189,6 +195,7 @@ public class ApplicationSaga {
     @EndSaga
     @SagaEventHandler(associationProperty = "applicationId")
     public void handle(AnimalAdoptedEvent event) {
+        log.info("animal adopted");
         webClient.put()
                 .uri("/confirm-payment?paymentIntentId=" + paymentIntentId)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -212,6 +219,7 @@ public class ApplicationSaga {
 
     @SagaEventHandler(associationProperty = "applicationId")
     public void handle(ReviewUndoneEvent event) {
+        log.info("application review undone");
         ReversePaymentCommand reversePaymentCommand = ReversePaymentCommand
                 .builder()
                 .applicationId(applicationId)
@@ -241,6 +249,7 @@ public class ApplicationSaga {
 
     @SagaEventHandler(associationProperty = "applicationId")
     public void handle(PaymentReversedEvent event) {
+        log.info("payment reversed");
         ReleaseAnimalCommand releaseAnimalCommand =
                 ReleaseAnimalCommand
                         .builder()
@@ -255,6 +264,7 @@ public class ApplicationSaga {
 
     @SagaEventHandler(associationProperty = "applicationId")
     public void handle(AnimalReleasedEvent event) {
+        log.info("animal released");
         CancelApplicationCommand cancelApplicationCommand = CancelApplicationCommand
                 .builder()
                 .applicationId(event.getApplicationId())
@@ -266,6 +276,7 @@ public class ApplicationSaga {
     @EndSaga
     @SagaEventHandler(associationProperty = "applicationId")
     public void handle(ApplicationCancelledEvent event) {
+        log.info("application cancelled");
         queryUpdateEmitter.emit(
                 FetchApplicationStatusSummaryQuery.class,
                 query -> Objects.equals(query.getApplicationId(), event.getApplicationId()),
@@ -284,6 +295,7 @@ public class ApplicationSaga {
 
     @SagaEventHandler(associationProperty = "applicationId")
     public void handle(ApplicationRejectedEvent event) {
+        log.info("application rejected");
         queryUpdateEmitter.emit(
                 FetchApplicationStatusSummaryQuery.class,
                 query -> Objects.equals(query.getApplicationId(), event.getApplicationId()),
@@ -309,6 +321,7 @@ public class ApplicationSaga {
     @EndSaga
     @SagaEventHandler(associationProperty = "applicationId")
     public void handle(AnimalReleasedForRejectionEvent event) {
+        log.info("animal released due to rejected application");
         queryUpdateEmitter.emit(
                 FetchApplicationStatusSummaryQuery.class,
                 query -> Objects.equals(query.getApplicationId(), event.getApplicationId()),

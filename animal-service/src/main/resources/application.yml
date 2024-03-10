@@ -17,3 +17,9 @@ spring:
   graphql:
     graphiql:
       enabled: true
+
+axon:
+  serializer:
+    general: jackson
+    events: jackson
+    messages: jackson

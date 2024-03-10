@@ -9,6 +9,6 @@ import reactor.core.publisher.Flux;
 
 @Repository
 public interface ApplicationRepository extends ReactiveMongoRepository<Application, String> {
-    Flux<Application> findAllByUserProfileIdAndApplicationStatus(String userProfileId, ApplicationStatus applicationStatus);
-    Flux<Application> findAll(Pageable pageable);
+    Flux<Application> findByUserProfileIdAndApplicationStatus(String userProfileId, ApplicationStatus applicationStatus);
+    Flux<Application> findByApplicationIdNotNull(Pageable pageable);
 }

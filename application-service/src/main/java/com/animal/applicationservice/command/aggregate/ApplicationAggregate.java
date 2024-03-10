@@ -1,9 +1,12 @@
 package com.animal.applicationservice.command.aggregate;
 
 import com.animal.applicationservice.command.model.*;
+import com.animal.applicationservice.constant.Constants;
+import com.animal.applicationservice.controller.model.Notification;
 import com.animal.applicationservice.data.model.Application;
 import com.animal.applicationservice.data.model.ApplicationStatus;
 import com.animal.applicationservice.event.model.*;
+import lombok.NoArgsConstructor;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -16,6 +19,7 @@ import reactor.core.publisher.Sinks;
 import java.util.UUID;
 
 @Aggregate
+@NoArgsConstructor
 public class ApplicationAggregate {
     @AggregateIdentifier
     private String applicationId;
@@ -23,7 +27,7 @@ public class ApplicationAggregate {
     private String animalProfileId;
     private ApplicationStatus applicationStatus;
     @Autowired
-    private Sinks.Many<ServerSentEvent<String>> reviewNotificationSink;
+    private Sinks.Many<ServerSentEvent<Notification>> reviewNotificationSink;
 
     @CommandHandler
     public ApplicationAggregate(CreateApplicationCommand command){
@@ -99,10 +103,10 @@ public class ApplicationAggregate {
     @CommandHandler
     public void handle(ReviewApplicationCommand command) {
         reviewNotificationSink.tryEmitNext(ServerSentEvent
-                .<String>builder()
+                .<Notification>builder()
                 .id(UUID.randomUUID().toString())
-                .event("review application notification")
-                .data(String.format(command.getApplicationId()))
+                .event(Constants.NOTIFICATION_REVIEW)
+                .data(Notification.builder().heartbeat(false).value(command.getApplicationId()).build())
                 .build()
         );
     }
