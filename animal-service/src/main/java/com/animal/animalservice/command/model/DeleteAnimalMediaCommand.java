@@ -5,7 +5,6 @@ import lombok.Data;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 import java.io.Serializable;
-import java.util.List;
 
 @Data
 @Builder

@@ -3,7 +3,6 @@ package com.animal.animalservice.command.model;
 import com.animal.animalservice.data.model.*;
 import lombok.*;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
-import org.bson.types.Binary;
 
 import java.io.Serializable;
 import java.util.List;

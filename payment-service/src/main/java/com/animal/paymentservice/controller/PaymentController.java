@@ -3,20 +3,14 @@ package com.animal.paymentservice.controller;
 
 import com.animal.paymentservice.controller.model.ValidatePaymentMethodRequest;
 import com.animal.paymentservice.service.PaymentService;
-import com.stripe.exception.StripeException;
 import jakarta.validation.ValidationException;
-import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
-import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.WebExchangeBindException;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
