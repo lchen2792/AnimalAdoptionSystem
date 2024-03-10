@@ -35,11 +35,11 @@ public class PaymentController {
                 .map(ResponseEntity::ok)
                 .onErrorResume(ValidationException.class, err -> {
                     log.error(err.getMessage());
-                    return Mono.just(ResponseEntity.badRequest().build());
+                    return Mono.just(ResponseEntity.badRequest().body("payment method validation failed"));
                 })
                 .onErrorResume(WebExchangeBindException.class, err -> {
                     log.error(err.getMessage());
-                    return Mono.just(ResponseEntity.badRequest().build());
+                    return Mono.just(ResponseEntity.badRequest().body("payment info has error(s)"));
                 });
     }
 

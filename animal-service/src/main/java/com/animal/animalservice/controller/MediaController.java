@@ -2,6 +2,7 @@ package com.animal.animalservice.controller;
 
 import com.animal.animalservice.command.model.DeleteAnimalMediaCommand;
 import com.animal.animalservice.command.model.UploadAnimalMediaCommand;
+import com.animal.animalservice.controller.response.Media;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.client.gridfs.GridFSBucket;
@@ -48,7 +49,7 @@ public class MediaController {
     private transient CommandGateway commandGateway;
 
     @GetMapping("/{mediaId}")
-    public ResponseEntity<byte[]> getAnimalMediaById(@PathVariable String mediaId, HttpServletResponse response) {
+    public ResponseEntity<Media> getAnimalMediaById(@PathVariable String mediaId, HttpServletResponse response) {
         try {
             GridFSFile file = Optional
                     .ofNullable(gridFsTemplate.findOne(new Query(Criteria.where("_id").is(mediaId))))
@@ -56,11 +57,12 @@ public class MediaController {
 
             String mediaType = Optional
                     .ofNullable(file.getMetadata())
-                    .map(metadata -> metadata.get("mediaType").toString())
+                    .map(metadata -> metadata.get("_contentType").toString())
                     .orElseThrow(() -> new RuntimeException("failed to decide media type"));
+
             MediaType contentType = MediaType.parseMediaType(mediaType);
-            byte[] bytes = operations.getResource(file).getInputStream().readAllBytes();
-            return ResponseEntity.ok().contentType(contentType).body(bytes);
+            InputStream inputStream = operations.getResource(file).getInputStream();
+            return ResponseEntity.ok().body(Media.builder().mediaType(contentType).inputStream(inputStream).build());
         } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.badRequest().build();
@@ -75,8 +77,7 @@ public class MediaController {
                         DBObject metadata = new BasicDBObject();
                         metadata.put("animalProfileId", animalProfileId);
                         metadata.put("timeStamp", Instant.now().toEpochMilli());
-                        metadata.put("mediaType", mediaType);
-                        return gridFsTemplate.store(file.getInputStream(), RandomStringUtils.randomAlphanumeric(16)+".jpg", mediaType,  metadata).toString();
+                        return gridFsTemplate.store(file.getInputStream(), RandomStringUtils.randomAlphanumeric(16), mediaType,  metadata).toString();
                     } catch (IOException e) {
                         log.error(e.getMessage());
                         throw new RuntimeException(e);

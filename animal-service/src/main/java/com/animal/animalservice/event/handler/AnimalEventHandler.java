@@ -4,6 +4,7 @@ import com.animal.animalservice.event.model.*;
 import com.animal.animalservice.data.model.AnimalProfile;
 import com.animal.animalservice.data.repository.AnimalProfileRepository;
 import com.animal.animalservice.exception.AnimalProfileNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,10 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
+@Slf4j
 public class AnimalEventHandler {
 
     @Autowired
@@ -122,7 +126,12 @@ public class AnimalEventHandler {
                 .findById(event.getAnimalProfileId())
                 .ifPresentOrElse(
                         animalProfile -> {
-                            animalProfile.getMedia().add(event.getMediaId());
+                            List<String> media = animalProfile.getMedia();
+                            if (!media.contains((event.getMediaId()))) {
+                                media.add(event.getMediaId());
+                            } else {
+                                log.warn("media id {} already exists in animal profile {}", event.getMediaId(), animalProfile.getAnimalProfileId());
+                            }
                             animalProfileRepository.save(animalProfile);
                         },
                         () -> {
@@ -137,7 +146,12 @@ public class AnimalEventHandler {
                 .findById(event.getAnimalProfileId())
                 .ifPresentOrElse(
                         animalProfile -> {
-                            animalProfile.getMedia().remove(event.getMediaId());
+                            List<String> media = animalProfile.getMedia();
+                            if (media.contains(event.getMediaId())) {
+                                media.remove(event.getMediaId());
+                            } else {
+                                log.warn("media id {} not found in animal profile {}", event.getMediaId(), animalProfile.getAnimalProfileId());
+                            }
                             animalProfileRepository.save(animalProfile);
                         },
                         () -> {

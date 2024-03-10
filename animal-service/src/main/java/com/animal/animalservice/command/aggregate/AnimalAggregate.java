@@ -172,7 +172,9 @@ public class AnimalAggregate {
 
     @EventSourcingHandler
     public void handle(AnimalMediaUploadedEvent event) {
-        this.media.add(event.getMediaId());
+        if (!this.media.contains(event.getMediaId())) {
+            this.media.add(event.getMediaId());
+        }
     }
 
     @CommandHandler
