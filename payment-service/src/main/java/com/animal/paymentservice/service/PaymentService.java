@@ -22,7 +22,7 @@ public class PaymentService {
         Stripe.apiKey = secretKey;
     }
 
-    public Mono<String> validate(ValidatePaymentMethodRequest paymentDetail) {
+    public Mono<String> validatePaymentMethod(ValidatePaymentMethodRequest paymentDetail) {
         PaymentMethodCreateParams paymentMethodCreateParams =
                 PaymentMethodCreateParams.builder()
                         .setType(PaymentMethodCreateParams.Type.CARD)
@@ -92,6 +92,16 @@ public class PaymentService {
         } catch (StripeException e){
             log.error(e.getMessage());
             return Mono.just(false);
+        }
+    }
+
+    public Mono<String> removePaymentMethod(String customerId) {
+        try {
+            Customer customer = Customer.retrieve(customerId).delete();
+            return Mono.just(customer.getId());
+        } catch (StripeException e) {
+            log.error(e.getMessage());
+            return Mono.empty();
         }
     }
 }

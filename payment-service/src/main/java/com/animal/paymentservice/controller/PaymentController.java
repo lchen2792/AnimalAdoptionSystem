@@ -21,10 +21,10 @@ public class PaymentController {
     @Value("${stripe.application-fee}")
     private Long applicationFee;
 
-    @PostMapping("/validate-payment")
+    @PostMapping("/validate-payment-method")
     public Mono<ResponseEntity<String>> validate(@RequestBody @Validated Mono<ValidatePaymentMethodRequest> paymentDetail) {
         return paymentDetail
-                .flatMap(paymentService::validate)
+                .flatMap(paymentService::validatePaymentMethod)
                 .switchIfEmpty(Mono.error(new ValidationException("invalid payment method")))
                 .map(ResponseEntity::ok)
                 .onErrorResume(ValidationException.class, err -> {
@@ -37,8 +37,8 @@ public class PaymentController {
                 });
     }
 
-    @PostMapping("/process-payment")
-    public Mono<ResponseEntity<String>> processPayment(@RequestParam String customerId){
+    @PostMapping("/process-payment/customer/{customerId}")
+    public Mono<ResponseEntity<String>> processPayment(@PathVariable String customerId){
         return paymentService
                 .processPayment(customerId, applicationFee)
                 .switchIfEmpty(Mono.error(new ValidationException("invalid payment")))
@@ -49,8 +49,8 @@ public class PaymentController {
                 });
     }
 
-    @PutMapping("/confirm-payment")
-    public Mono<ResponseEntity<Boolean>> confirmPayment(@RequestParam String paymentIntentId){
+    @PutMapping("/confirm-payment/{paymentIntentId}")
+    public Mono<ResponseEntity<Boolean>> confirmPayment(@PathVariable String paymentIntentId){
         return paymentService
                 .confirmPayment(paymentIntentId)
                 .switchIfEmpty(Mono.error(new ValidationException("failed to confirm payment")))
@@ -61,13 +61,25 @@ public class PaymentController {
                 });
     }
 
-    @PutMapping("/cancel-payment")
-    public Mono<ResponseEntity<Boolean>> cancelPayment(@RequestParam String paymentIntentId){
+    @PutMapping("/cancel-payment/{paymentIntentId}")
+    public Mono<ResponseEntity<Boolean>> cancelPayment(@PathVariable String paymentIntentId){
         return paymentService
                 .revertPayment(paymentIntentId)
                 .switchIfEmpty(Mono.error(new ValidationException("failed to cancel payment")))
                 .map(ResponseEntity::ok)
                 .onErrorResume(ValidationException.class, err-> {
+                    log.error(err.getMessage());
+                    return Mono.just(ResponseEntity.badRequest().build());
+                });
+    }
+
+    @DeleteMapping("/remove-payment-method/customer/{customerId}")
+    public Mono<ResponseEntity<String>> remove(@PathVariable String customerId) {
+        return paymentService
+                .removePaymentMethod(customerId)
+                .switchIfEmpty(Mono.error(new ValidationException("failed to remove payment method")))
+                .map(ResponseEntity::ok)
+                .onErrorResume(ValidationException.class, err -> {
                     log.error(err.getMessage());
                     return Mono.just(ResponseEntity.badRequest().build());
                 });

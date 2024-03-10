@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-public class PaymentValidationService {
+public class PaymentProcessingService {
     private static final String PAYMENT_SERVICE = "payment-service";
     @Autowired
     public WebClient webClient;
@@ -26,10 +26,10 @@ public class PaymentValidationService {
     @Async
     @Retry(name = PAYMENT_SERVICE)
     @CircuitBreaker(name = PAYMENT_SERVICE, fallbackMethod = "validatePaymentFallback")
-    public CompletableFuture<String> validatePayment(ValidatePaymentMethodRequest validatePaymentMethodRequest) {
+    public CompletableFuture<String> validatePaymentMethod(ValidatePaymentMethodRequest validatePaymentMethodRequest) {
         return webClient
                 .post()
-                .uri(baseUrl + "/validate-payment")
+                .uri(baseUrl + "/validate-payment-method")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromPublisher(Mono.just(validatePaymentMethodRequest), ValidatePaymentMethodRequest.class))
                 .retrieve()
@@ -38,6 +38,21 @@ public class PaymentValidationService {
     }
 
     public CompletableFuture<String> validatePaymentFallback(ValidatePaymentMethodRequest validatePaymentMethodRequest, Throwable ex) {
+        return CompletableFuture.failedFuture(new RemoteServiceNotAvailableException());
+    }
+
+    @Retry(name = PAYMENT_SERVICE)
+    @CircuitBreaker(name = PAYMENT_SERVICE, fallbackMethod = "deletePaymentMethodFallback")
+    public CompletableFuture<String> deletePaymentMethod(String customerId){
+        return webClient
+                .delete()
+                .uri(baseUrl + "/remove-payment-method/customer/" + customerId)
+                .retrieve()
+                .bodyToMono(String.class)
+                .toFuture();
+    }
+
+    public CompletableFuture<String> deletePaymentMethodFallback(String customerId, Throwable ex){
         return CompletableFuture.failedFuture(new RemoteServiceNotAvailableException());
     }
 }

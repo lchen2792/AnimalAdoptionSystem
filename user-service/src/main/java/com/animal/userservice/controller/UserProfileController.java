@@ -4,7 +4,7 @@ import com.animal.userservice.controller.model.CreateUserProfileRequest;
 import com.animal.userservice.controller.model.UpdateUserProfileRequest;
 import com.animal.userservice.controller.model.ValidatePaymentMethodRequest;
 import com.animal.userservice.data.model.UserProfile;
-import com.animal.userservice.service.PaymentValidationService;
+import com.animal.userservice.service.PaymentProcessingService;
 import com.animal.userservice.service.UserProfileService;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.BsonBinarySubType;
@@ -31,7 +31,7 @@ public class UserProfileController {
     @Autowired
     private transient UserProfileService userProfileService;
     @Autowired
-    private transient PaymentValidationService paymentValidationService;
+    private transient PaymentProcessingService paymentProcessingService;
 
     @GetMapping("/{userProfileId}")
     public UserProfile findUserProfileById(@PathVariable String userProfileId) {
@@ -47,8 +47,8 @@ public class UserProfileController {
         return userProfileService.findUserProfiles(pageable);
     }
 
-    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public String createUserProfile(@ModelAttribute CreateUserProfileRequest request, @RequestPart List<MultipartFile> files){
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String createUserProfile(@RequestPart CreateUserProfileRequest request, @RequestPart List<MultipartFile> files){
         UserProfile userProfile = UserProfile.builder().build();
         BeanUtils.copyProperties(request, userProfile);
         List<Binary> identifications = files
@@ -88,8 +88,8 @@ public class UserProfileController {
     @PutMapping("/{userProfileId}/payment")
     public CompletableFuture<String> updatePaymentDetail(@PathVariable String userProfileId, @RequestBody ValidatePaymentMethodRequest paymentDetail) {
         UserProfile curUserProfile = findUserProfileById(userProfileId);
-        return paymentValidationService
-                .validatePayment(paymentDetail)
+        return paymentProcessingService
+                .validatePaymentMethod(paymentDetail)
                 .thenApply(customerId -> {
                     curUserProfile.setCustomerId(customerId);
                     userProfileService.updateUserProfile(curUserProfile);
@@ -98,8 +98,10 @@ public class UserProfileController {
     }
 
     @DeleteMapping("/{userProfileId}")
-    public String deleteUserProfile(@PathVariable String userProfileId){
-        return userProfileService.deleteUserProfile(userProfileId);
+    public CompletableFuture<String> deleteUserProfile(@PathVariable String userProfileId){
+        return paymentProcessingService
+                .deletePaymentMethod(userProfileService.findUserProfileById(userProfileId).getCustomerId())
+                .thenApply(customerId -> userProfileService.deleteUserProfile(userProfileId));
     }
 }
 
