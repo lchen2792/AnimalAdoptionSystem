@@ -29,10 +29,18 @@ databaseChangeLog:
                 constraints:
                   nullable: false
             - column:
-                name: created_by
+                name: customer_id
                 type: varchar(255)
                 constraints:
                   nullable: false
+            - column:
+                name: payment_intent_id
+                type: varchar(255)
+                constraints:
+                  nullable: false
+            - column:
+                name: created_by
+                type: varchar(255)
             - column:
                 name: version
                 type: bigint

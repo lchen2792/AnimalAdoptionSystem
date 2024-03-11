@@ -1,7 +1,7 @@
 package com.animal.animalservice.query.handler;
 
 import com.animal.animalservice.data.model.AnimalProfile;
-import com.animal.animalservice.data.model.AnimalStatus;
+import com.animal.common.status.AnimalStatus;
 import com.animal.animalservice.data.repository.AnimalProfileRepository;
 import com.animal.animalservice.exception.AnimalProfileNotFoundException;
 import com.animal.animalservice.query.model.FetchAnimalProfileByIdQuery;

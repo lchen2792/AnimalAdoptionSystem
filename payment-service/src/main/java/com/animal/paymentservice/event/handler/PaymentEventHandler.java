@@ -1,9 +1,9 @@
 package com.animal.paymentservice.event.handler;
 
+import com.animal.common.event.PaymentProcessedEvent;
+import com.animal.common.event.PaymentReversedEvent;
 import com.animal.paymentservice.data.model.Payment;
 import com.animal.paymentservice.data.repository.PaymentRepository;
-import com.animal.paymentservice.event.model.PaymentProcessedEvent;
-import com.animal.paymentservice.event.model.PaymentReversedEvent;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,8 +18,8 @@ public class PaymentEventHandler {
     @EventHandler
     public void on(PaymentProcessedEvent event){
         Payment payment = Payment.builder()
+                .applicationId(event.getApplicationId())
                 .paymentId(event.getPaymentId())
-                .paymentStatus(event.getPaymentStatus())
                 .customerId(event.getCustomerId())
                 .paymentIntentId(event.getPaymentIntentId())
                 .paymentStatus(event.getPaymentStatus())

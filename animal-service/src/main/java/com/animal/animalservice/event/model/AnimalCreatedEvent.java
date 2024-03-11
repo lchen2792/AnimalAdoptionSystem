@@ -1,11 +1,11 @@
 package com.animal.animalservice.event.model;
 
 import com.animal.animalservice.data.model.*;
+import com.animal.common.status.AnimalStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.bson.types.Binary;
 
 import java.io.Serializable;
 import java.util.ArrayList;

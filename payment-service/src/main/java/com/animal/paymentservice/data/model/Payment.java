@@ -1,5 +1,6 @@
 package com.animal.paymentservice.data.model;
 
+import com.animal.common.status.PaymentStatus;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
@@ -23,7 +24,7 @@ public class Payment {
     private String userProfileId;
     @Column("customer_id")
     private String customerId;
-    @Column("payment_intent-id")
+    @Column("payment_intent_id")
     private String paymentIntentId;
     @Column("payment_status")
     private PaymentStatus paymentStatus;

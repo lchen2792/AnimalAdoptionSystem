@@ -1,9 +1,9 @@
 package com.animal.animalservice.controller.request;
 
 import com.animal.animalservice.data.model.*;
+import com.animal.common.status.AnimalStatus;
 import lombok.Builder;
 import lombok.Data;
-import org.bson.types.Binary;
 
 import java.util.List;
 

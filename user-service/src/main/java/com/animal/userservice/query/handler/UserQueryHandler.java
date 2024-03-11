@@ -1,23 +1,25 @@
 package com.animal.userservice.query.handler;
 
+import com.animal.common.query.FetchUserPaymentMethodByUserProfileIdQuery;
 import com.animal.userservice.data.model.UserProfile;
 import com.animal.userservice.data.repository.UserProfileRepository;
-import com.animal.userservice.exception.UserProfileNotFoundException;
-import com.animal.userservice.query.model.FetchUserPaymentMethodByUserProfileIdQuery;
-import org.axonframework.eventhandling.EventHandler;
+import lombok.extern.slf4j.Slf4j;
+import org.axonframework.queryhandling.QueryHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class UserQueryHandler {
     @Autowired
     private UserProfileRepository userProfileRepository;
 
-    @EventHandler
+    @QueryHandler
     public String handle(FetchUserPaymentMethodByUserProfileIdQuery query) {
+        log.error("fetch user payment method processed");
         return userProfileRepository
                 .findById(query.getUserProfileId())
                 .map(UserProfile::getCustomerId)
-                .orElseThrow(() -> new UserProfileNotFoundException(query.getUserProfileId()));
+                .orElse(null);
     }
 }

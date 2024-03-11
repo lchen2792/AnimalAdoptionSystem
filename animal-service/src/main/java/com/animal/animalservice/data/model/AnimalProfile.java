@@ -1,5 +1,6 @@
 package com.animal.animalservice.data.model;
 
+import com.animal.common.status.AnimalStatus;
 import lombok.*;
 import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.mapping.Document;

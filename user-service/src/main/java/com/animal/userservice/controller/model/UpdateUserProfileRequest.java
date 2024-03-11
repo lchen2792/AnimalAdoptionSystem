@@ -3,7 +3,6 @@ package com.animal.userservice.controller.model;
 import com.animal.userservice.data.model.*;
 import lombok.Builder;
 import lombok.Data;
-import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 import java.io.Serializable;
 

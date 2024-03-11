@@ -36,6 +36,11 @@
 			<artifactId>axon-spring-boot-starter</artifactId>
 			<version>4.9.2</version>
 		</dependency>
+		<dependency>
+			<groupId>com.animal</groupId>
+			<artifactId>common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>

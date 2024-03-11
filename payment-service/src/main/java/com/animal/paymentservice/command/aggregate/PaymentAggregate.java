@@ -1,12 +1,10 @@
 package com.animal.paymentservice.command.aggregate;
 
-import com.animal.paymentservice.command.model.ProcessPaymentCommand;
-import com.animal.paymentservice.command.model.ReversePaymentCommand;
-import com.animal.paymentservice.data.model.PaymentStatus;
-import com.animal.paymentservice.event.model.PaymentProcessedEvent;
-import com.animal.paymentservice.event.model.PaymentReversedEvent;
-import com.animal.paymentservice.service.PaymentService;
-import com.stripe.exception.StripeException;
+import com.animal.common.command.ProcessPaymentCommand;
+import com.animal.common.command.ReversePaymentCommand;
+import com.animal.common.event.PaymentProcessedEvent;
+import com.animal.common.event.PaymentReversedEvent;
+import com.animal.common.status.PaymentStatus;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
@@ -14,7 +12,6 @@ import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Aggregate
 @NoArgsConstructor
@@ -30,6 +27,7 @@ public class PaymentAggregate {
 
     @CommandHandler
     public PaymentAggregate(ProcessPaymentCommand command){
+        log.info("process payment {}", command.getPaymentId());
         PaymentProcessedEvent paymentProcessedEvent = PaymentProcessedEvent
                 .builder()
                 .paymentId(command.getPaymentId())
@@ -41,6 +39,7 @@ public class PaymentAggregate {
                 .build();
 
         AggregateLifecycle.apply(paymentProcessedEvent);
+        log.info("process payment command processed");
     }
 
     @EventSourcingHandler
@@ -55,6 +54,7 @@ public class PaymentAggregate {
 
     @CommandHandler
     public void on(ReversePaymentCommand command) {
+        log.info("reverse payment {}", command.getPaymentId());
         PaymentReversedEvent paymentReversedEvent = PaymentReversedEvent
                 .builder()
                 .paymentId(command.getPaymentId())
@@ -67,6 +67,7 @@ public class PaymentAggregate {
                 .build();
 
         AggregateLifecycle.apply(paymentReversedEvent);
+        log.info("reverse payment command processed");
     }
 
     @EventSourcingHandler

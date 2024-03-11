@@ -109,6 +109,7 @@ public class ApplicationController {
                         .flatMapMany(res -> res
                                 .initialResult()
                                 .concatWith(res.updates())
+                                .timeout(Duration.ofSeconds(10))
                                 .doFinally(signal -> res.close()))
                 );
     }

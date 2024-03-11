@@ -10,18 +10,22 @@
         <module name="application-service" />
         <module name="authentication-service" />
         <module name="payment-service" />
-        <module name="training-service" />
+        <module name="common" />
         <module name="animal-service" />
         <module name="user-service" />
         <module name="message-service" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="training-service" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="animal-service" options="-parameters" />
       <module name="application-service" options="-parameters" />
       <module name="authentication-service" options="-parameters" />
+      <module name="common" options="-parameters" />
       <module name="message-service" options="-parameters" />
       <module name="payment-service" options="-parameters" />
       <module name="training-service" options="-parameters" />
