@@ -2,10 +2,7 @@ package com.animal.applicationservice.event.handler;
 
 import com.animal.applicationservice.data.model.Application;
 import com.animal.applicationservice.data.repository.ApplicationRepository;
-import com.animal.applicationservice.event.model.ApplicationApprovedEvent;
-import com.animal.applicationservice.event.model.ApplicationCancelledEvent;
-import com.animal.applicationservice.event.model.ApplicationCreatedEvent;
-import com.animal.applicationservice.event.model.ApplicationRejectedEvent;
+import com.animal.applicationservice.event.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +60,19 @@ public class ApplicationEventHandler {
                 .switchIfEmpty(Mono.error(new IllegalArgumentException(event.getApplicationId())))
                 .flatMap(e -> {
                     e.setApplicationStatus(event.getApplicationStatus());
+                    return applicationRepository.save(e);
+                })
+                .subscribe();
+    }
+
+    @EventHandler
+    public void handle(ReviewRequestedEvent event){
+        applicationRepository
+                .findById(event.getApplicationId())
+                .switchIfEmpty(Mono.error(new IllegalArgumentException(event.getApplicationId())))
+                .flatMap(e -> {
+                    e.setApplicationStatus(event.getApplicationStatus());
+                    e.setPaymentId(event.getPaymentId());
                     return applicationRepository.save(e);
                 })
                 .subscribe();

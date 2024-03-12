@@ -12,7 +12,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ReviewApplicationCommand implements Serializable {
+public class RequestReviewCommand implements Serializable {
     @TargetAggregateIdentifier
     private String applicationId;
+    private String paymentId;
 }

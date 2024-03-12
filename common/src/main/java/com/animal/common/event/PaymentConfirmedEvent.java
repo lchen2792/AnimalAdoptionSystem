@@ -1,10 +1,10 @@
-package com.animal.common.command;
+package com.animal.common.event;
 
+import com.animal.common.status.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 import java.io.Serializable;
 
@@ -12,11 +12,11 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProcessPaymentCommand implements Serializable {
-    @TargetAggregateIdentifier
+public class PaymentConfirmedEvent implements Serializable {
     private String paymentId;
     private String applicationId;
     private String userProfileId;
     private String customerId;
     private String paymentIntentId;
+    private PaymentStatus paymentStatus;
 }

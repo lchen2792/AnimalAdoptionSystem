@@ -78,7 +78,7 @@ public class AnimalAggregate {
     @CommandHandler
     public void handle(ReserveAnimalCommand command) {
         log.info("reserve animal {}", command.getAnimalProfileId());
-        if (!this.status.equals(AnimalStatus.OPEN)) {
+        if (!this.status.equals(AnimalStatus.OPEN) && !this.status.equals(AnimalStatus.ADOPTED)) {
             throw new AnimalStatusNotMatchException(command.getAnimalProfileId(), AnimalStatus.OPEN, this.status);
         }
 

@@ -1,12 +1,10 @@
 package com.animal.applicationservice.saga;
 
 import com.animal.applicationservice.command.model.*;
-import com.animal.applicationservice.data.model.Application;
 import com.animal.applicationservice.data.model.ApplicationStatus;
 import com.animal.applicationservice.data.model.ApplicationStatusSummary;
 import com.animal.applicationservice.event.model.*;
 import com.animal.applicationservice.exception.RemoteServiceNotAvailableException;
-import com.animal.applicationservice.query.model.FetchApplicationByIdQuery;
 import com.animal.applicationservice.query.model.FetchApplicationStatusSummaryQuery;
 import com.animal.common.command.*;
 import com.animal.common.event.*;
@@ -28,13 +26,12 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.UUID;
 
 @Saga
 @Slf4j
-public class ApplicationSaga {
+public class SubmitApplicationSaga {
     @Autowired
     private transient ReactorCommandGateway commandGateway;
     @Autowired
@@ -113,7 +110,6 @@ public class ApplicationSaga {
                         .build()
                 )
                 .flatMap(processPaymentCommand -> commandGateway.send(processPaymentCommand))
-                .timeout(Duration.of(30, ChronoUnit.SECONDS))
                 .onErrorResume(err -> {
                     log.error("failed to process payment: {}", err.getMessage());
                     ReleaseAnimalCommand releaseAnimalCommand = ReleaseAnimalCommand
@@ -131,6 +127,54 @@ public class ApplicationSaga {
     @SagaEventHandler(associationProperty = "applicationId")
     public void handle(PaymentProcessedEvent event) {
         log.info("payment processed {}", event);
+
+        RequestReviewCommand requestReviewCommand = RequestReviewCommand
+                .builder()
+                .applicationId(applicationId)
+                .paymentId(paymentId)
+                .build();
+
+        commandGateway
+                .send(requestReviewCommand)
+                .onErrorResume(err -> {
+                    log.error("failed to request review: {}", err.getMessage());
+                    webClient
+                            .put()
+                            .uri("/cancel-payment/" + paymentIntentId)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .retrieve()
+                            .bodyToMono(Boolean.class)
+                            .retryWhen(Retry
+                                    .backoff(5, Duration.ofMinutes(1))
+                                    .jitter(0.75)
+                                    .onRetryExhaustedThrow((spec, signal) -> new RemoteServiceNotAvailableException())
+                            )
+                            .filter(res -> true)
+                            .switchIfEmpty(Mono.error(new IllegalArgumentException("failed to cancel payment " + paymentIntentId)))
+                            .onErrorComplete(e -> {
+                                log.error(e.getMessage());
+                                return true;
+                            })
+                            .subscribe();
+
+                    ReversePaymentCommand reversePaymentCommand =
+                            ReversePaymentCommand
+                                    .builder()
+                                    .applicationId(applicationId)
+                                    .paymentId(paymentId)
+                                    .userProfileId(userProfileId)
+                                    .message(err.getMessage())
+                                    .build();
+                    return commandGateway.send(reversePaymentCommand);
+                })
+                .subscribe();
+    }
+
+    @EndSaga
+    @SagaEventHandler(associationProperty = "applicationId")
+    public void handle(ReviewRequestedEvent event) {
+        log.info("review requested {}", event);
+
         queryUpdateEmitter.emit(
                 FetchApplicationStatusSummaryQuery.class,
                 query -> Objects.equals(query.getApplicationId(), applicationId),
@@ -145,106 +189,12 @@ public class ApplicationSaga {
                 FetchApplicationStatusSummaryQuery.class,
                 query -> Objects.equals(query.getApplicationId(), applicationId)
         );
-
-        ReviewApplicationCommand reviewApplicationCommand =
-                ReviewApplicationCommand.builder().applicationId(applicationId).build();
-        commandGateway
-                .send(reviewApplicationCommand)
-                .onErrorResume(err -> {
-                    log.error("failed to review application: {}", err.getMessage());
-                    ReversePaymentCommand reversePaymentCommand =
-                            ReversePaymentCommand
-                                    .builder()
-                                    .applicationId(applicationId)
-                                    .paymentId(paymentId)
-                                    .userProfileId(userProfileId)
-                                    .message(err.getMessage())
-                                    .build();
-                    return commandGateway.send(reversePaymentCommand);
-                })
-                .subscribe();
-    }
-
-    @SagaEventHandler(associationProperty = "applicationId")
-    public void handle(ApplicationApprovedEvent event){
-        log.info("application approved {}", event);
-
-        queryGateway
-                .query(FetchApplicationByIdQuery.class, ResponseTypes.instanceOf(Application.class))
-                .switchIfEmpty(Mono.error(new IllegalArgumentException(event.getApplicationId())))
-                .map(Application::getAnimalProfileId)
-                .flatMap(id -> {
-                    AdoptAnimalCommand adoptAnimalCommand = AdoptAnimalCommand
-                            .builder()
-                            .animalProfileId(id)
-                            .build();
-                    return commandGateway.send(adoptAnimalCommand);
-                })
-                .onErrorResume(err -> {
-                    log.error("failed to adopt animal: {}", err.getMessage());
-                    UndoReviewCommand undoReviewCommand = UndoReviewCommand
-                            .builder()
-                            .applicationId(applicationId)
-                            .message(err.getMessage())
-                            .build();
-                    return commandGateway.send(undoReviewCommand);
-                })
-                .subscribe();
-    }
-
-    @EndSaga
-    @SagaEventHandler(associationProperty = "animalProfileId")
-    public void handle(AnimalAdoptedEvent event) {
-        log.info("animal adopted {}", event);
-        webClient.put()
-                .uri("/confirm-payment?paymentIntentId=" + paymentIntentId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .bodyToMono(Boolean.class)
-                .retryWhen(Retry
-                        .backoff(5, Duration.ofMinutes(1))
-                        .jitter(0.75)
-                        .onRetryExhaustedThrow((spec, signal) -> new RemoteServiceNotAvailableException())
-                )
-                .filter(res -> true)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException()))
-                .doOnError(err -> log.error(err.getMessage()))
-                .subscribe();
-    }
-
-    @SagaEventHandler(associationProperty = "applicationId")
-    public void handle(ReviewUndoneEvent event) {
-        log.info("application review undone {}", event);
-        ReversePaymentCommand reversePaymentCommand = ReversePaymentCommand
-                .builder()
-                .applicationId(applicationId)
-                .userProfileId(userProfileId)
-                .paymentId(paymentId)
-                .message(event.getMessage())
-                .build();
-
-        webClient
-                .put()
-                .uri("/cancel-payment?paymentIntentId=" + paymentIntentId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .bodyToMono(Boolean.class)
-                .retryWhen(Retry
-                        .backoff(5, Duration.ofMinutes(1))
-                        .jitter(0.75)
-                        .onRetryExhaustedThrow((spec, signal) -> new RemoteServiceNotAvailableException())
-                )
-                .filter(res -> true)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException()))
-                .doOnError(err -> log.error(err.getMessage()))
-                .subscribe();
-
-        commandGateway.send(reversePaymentCommand).subscribe();
     }
 
     @SagaEventHandler(associationProperty = "applicationId")
     public void handle(PaymentReversedEvent event) {
         log.info("payment reversed {}", event);
+
         ReleaseAnimalCommand releaseAnimalCommand =
                 ReleaseAnimalCommand
                         .builder()
@@ -260,6 +210,7 @@ public class ApplicationSaga {
     @SagaEventHandler(associationProperty = "animalProfileId")
     public void handle(AnimalReleasedEvent event) {
         log.info("animal released {}", event);
+
         CancelApplicationCommand cancelApplicationCommand = CancelApplicationCommand
                 .builder()
                 .applicationId(applicationId)
@@ -272,27 +223,22 @@ public class ApplicationSaga {
     @SagaEventHandler(associationProperty = "applicationId")
     public void handle(ApplicationCancelledEvent event) {
         log.info("application cancelled {}", event);
-    }
 
-    @SagaEventHandler(associationProperty = "applicationId")
-    public void handle(ApplicationRejectedEvent event) {
-        log.info("application rejected {}", event);
+        queryUpdateEmitter.emit(
+                FetchApplicationStatusSummaryQuery.class,
+                query -> Objects.equals(query.getApplicationId(), applicationId),
+                ApplicationStatusSummary
+                        .builder()
+                        .applicationId(applicationId)
+                        .applicationStatus(ApplicationStatus.CANCELLED)
+                        .message(event.getMessage())
+                        .build()
+        );
 
-        ReleaseAnimalForRejectionCommand releaseAnimalCommand = ReleaseAnimalForRejectionCommand
-                .builder()
-                .applicationId(applicationId)
-                .userProfileId(userProfileId)
-                .animalProfileId(animalProfileId)
-                .message(event.getMessage())
-                .build();
-
-        commandGateway.send(releaseAnimalCommand).subscribe();
-    }
-
-    @EndSaga
-    @SagaEventHandler(associationProperty = "animalProfileId")
-    public void handle(AnimalReleasedForRejectionEvent event) {
-        log.info("animal released due to rejected application {}", event);
+        queryUpdateEmitter.complete(
+                FetchApplicationStatusSummaryQuery.class,
+                query -> Objects.equals(query.getApplicationId(), applicationId)
+        );
     }
 }
 

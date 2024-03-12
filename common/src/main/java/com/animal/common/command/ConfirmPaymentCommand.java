@@ -12,7 +12,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProcessPaymentCommand implements Serializable {
+public class ConfirmPaymentCommand implements Serializable {
     @TargetAggregateIdentifier
     private String paymentId;
     private String applicationId;

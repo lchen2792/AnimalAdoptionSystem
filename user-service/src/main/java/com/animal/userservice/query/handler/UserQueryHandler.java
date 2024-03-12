@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.axonframework.queryhandling.QueryHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 @Component
 @Slf4j
@@ -15,11 +16,12 @@ public class UserQueryHandler {
     private UserProfileRepository userProfileRepository;
 
     @QueryHandler
-    public String handle(FetchUserPaymentMethodByUserProfileIdQuery query) {
+    public Mono<String> handle(FetchUserPaymentMethodByUserProfileIdQuery query) {
         log.error("fetch user payment method processed");
         return userProfileRepository
                 .findById(query.getUserProfileId())
                 .map(UserProfile::getCustomerId)
-                .orElse(null);
+                .map(Mono::just)
+                .orElseGet(Mono::empty);
     }
 }

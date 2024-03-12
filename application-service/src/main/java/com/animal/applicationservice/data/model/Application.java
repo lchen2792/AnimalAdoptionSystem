@@ -15,6 +15,7 @@ public class Application {
     private String applicationId;
     private String userProfileId;
     private String animalProfileId;
+    private String paymentId;
     private ApplicationStatus applicationStatus;
     @Version
     private Long version;

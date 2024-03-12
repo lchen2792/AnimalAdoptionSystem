@@ -34,6 +34,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -109,9 +110,13 @@ public class ApplicationController {
                         .flatMapMany(res -> res
                                 .initialResult()
                                 .concatWith(res.updates())
-                                .timeout(Duration.ofSeconds(10))
+                                .timeout(Duration.ofSeconds(30))
                                 .doFinally(signal -> res.close()))
-                );
+                )
+                .onErrorComplete(err -> {
+                    log.error(err.getMessage());
+                    return true;
+                });
     }
 
     @PutMapping("/review")
@@ -121,9 +126,11 @@ public class ApplicationController {
                             ? ApproveApplicationCommand.builder().applicationId(request.getApplicationId()).build()
                             : RejectApplicationCommand.builder().applicationId(request.getApplicationId()).message(request.getComment()).build()
                     )
-                    .switchIfEmpty(Mono.error(new IllegalArgumentException(request.getApplicationId())))
                     .map(res -> ResponseEntity.ok(res.toString()))
-                    .onErrorResume(err -> Mono.just(ResponseEntity.internalServerError().body(err.getMessage())));
+                    .onErrorResume(err -> {
+                        log.error(err.getMessage());
+                        return Mono.just(ResponseEntity.internalServerError().body(err.getMessage()));
+                    });
     }
 
     @GetMapping(value = "/review/notification")

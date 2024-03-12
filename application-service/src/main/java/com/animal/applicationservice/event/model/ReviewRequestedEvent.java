@@ -12,7 +12,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ApplicationApprovedEvent implements Serializable {
+public class ReviewRequestedEvent implements Serializable {
     private String applicationId;
     private String paymentId;
     private ApplicationStatus applicationStatus;

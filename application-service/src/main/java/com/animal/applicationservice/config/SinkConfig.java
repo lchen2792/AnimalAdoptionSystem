@@ -15,7 +15,7 @@ public class SinkConfig {
 
     @Bean
     public Sinks.Many<ServerSentEvent<Notification>> sink(){
-        return Sinks.many().multicast().onBackpressureBuffer(Queues.SMALL_BUFFER_SIZE, false);
+        return Sinks.many().replay().all();
     }
 
     @Bean

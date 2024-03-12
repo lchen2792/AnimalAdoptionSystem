@@ -1,4 +1,4 @@
-package com.animal.animalservice.event.model;
+package com.animal.common.query;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AnimalMediaUploadedEvent implements Serializable {
-    private String animalProfileId;
-    private String mediaId;
+public class FetchPaymentIntentIdByIdQuery implements Serializable {
+    private String paymentId;
 }

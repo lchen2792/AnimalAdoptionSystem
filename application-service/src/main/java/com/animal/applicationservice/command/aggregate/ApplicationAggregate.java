@@ -3,7 +3,6 @@ package com.animal.applicationservice.command.aggregate;
 import com.animal.applicationservice.command.model.*;
 import com.animal.applicationservice.constant.Constants;
 import com.animal.applicationservice.controller.model.Notification;
-import com.animal.applicationservice.data.model.Application;
 import com.animal.applicationservice.data.model.ApplicationStatus;
 import com.animal.applicationservice.event.model.*;
 import lombok.NoArgsConstructor;
@@ -25,6 +24,7 @@ public class ApplicationAggregate {
     private String applicationId;
     private String userProfileId;
     private String animalProfileId;
+    private String paymentId;
     private ApplicationStatus applicationStatus;
     @Autowired
     private Sinks.Many<ServerSentEvent<Notification>> reviewNotificationSink;
@@ -73,6 +73,7 @@ public class ApplicationAggregate {
                 .builder()
                 .applicationId(command.getApplicationId())
                 .applicationStatus(ApplicationStatus.APPROVED)
+                .paymentId(command.getPaymentId())
                 .build();
 
         AggregateLifecycle.apply(event);
@@ -89,6 +90,7 @@ public class ApplicationAggregate {
                 .builder()
                 .applicationId(command.getApplicationId())
                 .applicationStatus(ApplicationStatus.REJECTED)
+                .paymentId(command.getPaymentId())
                 .message(command.getMessage())
                 .build();
 
@@ -101,7 +103,7 @@ public class ApplicationAggregate {
     }
 
     @CommandHandler
-    public void handle(ReviewApplicationCommand command) {
+    public void handle(RequestReviewCommand command) {
         reviewNotificationSink.tryEmitNext(ServerSentEvent
                 .<Notification>builder()
                 .id(UUID.randomUUID().toString())
@@ -109,6 +111,20 @@ public class ApplicationAggregate {
                 .data(Notification.builder().heartbeat(false).value(command.getApplicationId()).build())
                 .build()
         );
+
+        ReviewRequestedEvent event = ReviewRequestedEvent
+                .builder()
+                .applicationId(command.getApplicationId())
+                .applicationStatus(ApplicationStatus.SUBMITTED)
+                .paymentId(command.getPaymentId())
+                .build();
+        AggregateLifecycle.apply(event);
+    }
+
+    @EventSourcingHandler
+    public void handle(ReviewRequestedEvent event) {
+        this.applicationStatus = event.getApplicationStatus();
+        this.paymentId = event.getPaymentId();
     }
 
     @CommandHandler
@@ -116,6 +132,7 @@ public class ApplicationAggregate {
         ReviewUndoneEvent event = ReviewUndoneEvent
                 .builder()
                 .applicationId(command.getApplicationId())
+                .applicationStatus(ApplicationStatus.SUBMITTED)
                 .message(command.getMessage())
                 .build();
         AggregateLifecycle.apply(event);
