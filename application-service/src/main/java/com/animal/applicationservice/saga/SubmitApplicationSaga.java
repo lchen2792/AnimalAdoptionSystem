@@ -19,6 +19,7 @@ import org.axonframework.modelling.saga.SagaLifecycle;
 import org.axonframework.modelling.saga.StartSaga;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.axonframework.spring.stereotype.Saga;
+import org.bson.internal.BsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -128,16 +129,27 @@ public class SubmitApplicationSaga {
     public void handle(PaymentProcessedEvent event) {
         log.info("payment processed {}", event);
 
-        RequestReviewCommand requestReviewCommand = RequestReviewCommand
-                .builder()
-                .applicationId(applicationId)
-                .paymentId(paymentId)
-                .build();
-
-        commandGateway
-                .send(requestReviewCommand)
+        webClient.put()
+                .uri("/confirm-payment/" + paymentIntentId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .retryWhen(Retry
+                        .backoff(5, Duration.ofMinutes(1))
+                        .jitter(0.75)
+                        .onRetryExhaustedThrow((spec, signal) -> new RemoteServiceNotAvailableException())
+                )
+                .filter(res -> true)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("failed to confirm payment " + paymentIntentId)))
+                .map(res -> ConfirmPaymentCommand
+                        .builder()
+                        .paymentId(paymentId)
+                        .applicationId(event.getApplicationId())
+                        .build()
+                )
+                .flatMap(command -> commandGateway.send(command))
                 .onErrorResume(err -> {
-                    log.error("failed to request review: {}", err.getMessage());
+                    log.error("failed to confirm payment: {}", err.getMessage());
                     webClient
                             .put()
                             .uri("/cancel-payment/" + paymentIntentId)
@@ -172,8 +184,23 @@ public class SubmitApplicationSaga {
 
     @EndSaga
     @SagaEventHandler(associationProperty = "applicationId")
-    public void handle(ReviewRequestedEvent event) {
-        log.info("review requested {}", event);
+    public void handle(PaymentConfirmedEvent event) {
+        log.info("payment confirmed {}", event);
+
+        RequestReviewCommand requestReviewCommand = RequestReviewCommand
+                .builder()
+                .applicationId(applicationId)
+                .paymentId(paymentId)
+                .build();
+
+        commandGateway
+                .send(requestReviewCommand)
+                .retryWhen(Retry.backoff(5, Duration.ofMinutes(1)).jitter(0.75))
+                .onErrorResume(err -> {
+                    log.error("failed to request review for application {}", requestReviewCommand.getApplicationId());
+                    return Mono.empty();
+                })
+                .subscribe();
 
         queryUpdateEmitter.emit(
                 FetchApplicationStatusSummaryQuery.class,

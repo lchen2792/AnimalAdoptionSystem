@@ -33,10 +33,14 @@ public class ApplicationEventHandler {
     public void handle(ApplicationCancelledEvent event){
         applicationRepository
                 .findById(event.getApplicationId())
-                .switchIfEmpty(Mono.error(new IllegalArgumentException(event.getApplicationId())))
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("application not found: " + event.getApplicationId())))
                 .flatMap(e -> {
                     e.setApplicationStatus(event.getApplicationStatus());
                     return applicationRepository.save(e);
+                })
+                .onErrorComplete(err -> {
+                    log.error(err.getMessage());
+                    return true;
                 })
                 .subscribe();
     }
@@ -45,10 +49,14 @@ public class ApplicationEventHandler {
     public void handle(ApplicationApprovedEvent event){
         applicationRepository
                 .findById(event.getApplicationId())
-                .switchIfEmpty(Mono.error(new IllegalArgumentException(event.getApplicationId())))
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("application not found: " + event.getApplicationId())))
                 .flatMap(e -> {
                     e.setApplicationStatus(event.getApplicationStatus());
                     return applicationRepository.save(e);
+                })
+                .onErrorComplete(err -> {
+                    log.error(err.getMessage());
+                    return true;
                 })
                 .subscribe();
     }
@@ -57,10 +65,14 @@ public class ApplicationEventHandler {
     public void handle(ApplicationRejectedEvent event){
         applicationRepository
                 .findById(event.getApplicationId())
-                .switchIfEmpty(Mono.error(new IllegalArgumentException(event.getApplicationId())))
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("application not found: " + event.getApplicationId())))
                 .flatMap(e -> {
                     e.setApplicationStatus(event.getApplicationStatus());
                     return applicationRepository.save(e);
+                })
+                .onErrorComplete(err -> {
+                    log.error(err.getMessage());
+                    return true;
                 })
                 .subscribe();
     }
@@ -69,11 +81,31 @@ public class ApplicationEventHandler {
     public void handle(ReviewRequestedEvent event){
         applicationRepository
                 .findById(event.getApplicationId())
-                .switchIfEmpty(Mono.error(new IllegalArgumentException(event.getApplicationId())))
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("application not found: " + event.getApplicationId())))
                 .flatMap(e -> {
                     e.setApplicationStatus(event.getApplicationStatus());
                     e.setPaymentId(event.getPaymentId());
                     return applicationRepository.save(e);
+                })
+                .onErrorComplete(err -> {
+                    log.error(err.getMessage());
+                    return true;
+                })
+                .subscribe();
+    }
+
+    @EventHandler
+    public void handle(ReviewUndoneEvent event) {
+        applicationRepository
+                .findById(event.getApplicationId())
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("application not found: " + event.getApplicationId())))
+                .flatMap(e -> {
+                    e.setApplicationStatus(event.getApplicationStatus());
+                    return applicationRepository.save(e);
+                })
+                .onErrorComplete(err -> {
+                    log.error(err.getMessage());
+                    return true;
                 })
                 .subscribe();
     }

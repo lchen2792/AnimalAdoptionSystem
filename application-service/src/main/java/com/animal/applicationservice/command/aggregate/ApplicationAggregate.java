@@ -90,7 +90,6 @@ public class ApplicationAggregate {
                 .builder()
                 .applicationId(command.getApplicationId())
                 .applicationStatus(ApplicationStatus.REJECTED)
-                .paymentId(command.getPaymentId())
                 .message(command.getMessage())
                 .build();
 

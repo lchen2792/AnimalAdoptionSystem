@@ -1,7 +1,9 @@
 package com.animal.paymentservice.command.aggregate;
 
+import com.animal.common.command.ConfirmPaymentCommand;
 import com.animal.common.command.ProcessPaymentCommand;
 import com.animal.common.command.ReversePaymentCommand;
+import com.animal.common.event.PaymentConfirmedEvent;
 import com.animal.common.event.PaymentProcessedEvent;
 import com.animal.common.event.PaymentReversedEvent;
 import com.animal.common.status.PaymentStatus;
@@ -72,6 +74,27 @@ public class PaymentAggregate {
 
     @EventSourcingHandler
     public void on(PaymentReversedEvent event) {
+        this.paymentStatus = event.getPaymentStatus();
+    }
+
+    @CommandHandler
+    public void on(ConfirmPaymentCommand command) {
+        log.info("confirm payment {}", command.getPaymentId());
+
+        PaymentConfirmedEvent event = PaymentConfirmedEvent
+                .builder()
+                .paymentId(command.getPaymentId())
+                .applicationId(command.getApplicationId())
+                .customerId(command.getCustomerId())
+                .paymentIntentId(command.getPaymentIntentId())
+                .paymentStatus(PaymentStatus.CONFIRMED)
+                .build();
+        AggregateLifecycle.apply(event);
+        log.info("confirm payment command processed");
+    }
+
+    @EventSourcingHandler
+    public void on(PaymentConfirmedEvent event){
         this.paymentStatus = event.getPaymentStatus();
     }
 }

@@ -17,7 +17,7 @@ public class UserQueryHandler {
 
     @QueryHandler
     public Mono<String> handle(FetchUserPaymentMethodByUserProfileIdQuery query) {
-        log.error("fetch user payment method processed");
+        log.info("fetch user payment method processed");
         return userProfileRepository
                 .findById(query.getUserProfileId())
                 .map(UserProfile::getCustomerId)

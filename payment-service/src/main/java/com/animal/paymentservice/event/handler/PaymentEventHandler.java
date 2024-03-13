@@ -1,5 +1,6 @@
 package com.animal.paymentservice.event.handler;
 
+import com.animal.common.event.PaymentConfirmedEvent;
 import com.animal.common.event.PaymentProcessedEvent;
 import com.animal.common.event.PaymentReversedEvent;
 import com.animal.paymentservice.data.model.Payment;
@@ -30,6 +31,18 @@ public class PaymentEventHandler {
 
     @EventHandler
     public void on(PaymentReversedEvent event) {
+        paymentRepository
+                .findById(event.getPaymentId())
+                .switchIfEmpty(Mono.error(new IllegalArgumentException(event.getPaymentId())))
+                .flatMap(payment -> {
+                    payment.setPaymentStatus(event.getPaymentStatus());
+                    return paymentRepository.save(payment);
+                })
+                .subscribe();
+    }
+
+    @EventHandler
+    public void on(PaymentConfirmedEvent event) {
         paymentRepository
                 .findById(event.getPaymentId())
                 .switchIfEmpty(Mono.error(new IllegalArgumentException(event.getPaymentId())))

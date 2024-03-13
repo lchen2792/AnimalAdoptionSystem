@@ -18,6 +18,9 @@ import org.axonframework.spring.stereotype.Saga;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
+
+import java.time.Duration;
 
 @Saga
 @Slf4j
@@ -28,7 +31,6 @@ public class RejectApplicationSaga {
     private transient ReactorQueryGateway queryGateway;
     @Autowired
     private transient WebClient webClient;
-    private static String paymentId;
 
     @StartSaga
     @SagaEventHandler(associationProperty = "applicationId")
@@ -41,7 +43,6 @@ public class RejectApplicationSaga {
                         ResponseTypes.instanceOf(Application.class)
                 )
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("failed to find application " + event.getApplicationId())))
-                .doOnSuccess(application -> paymentId = application.getPaymentId())
                 .map(application -> ReleaseAnimalForRejectionCommand
                         .builder()
                         .applicationId(application.getApplicationId())
@@ -73,6 +74,13 @@ public class RejectApplicationSaga {
     public void handle(ReviewUndoneEvent event) {
         log.info("application review undone {}", event);
         RequestReviewCommand requestReviewCommand = RequestReviewCommand.builder().applicationId(event.getApplicationId()).build();
+        commandGateway.send(requestReviewCommand)
+                .retryWhen(Retry.backoff(5, Duration.ofMinutes(1)).jitter(0.75))
+                .onErrorResume(err -> {
+                    log.error("failed to request review for application {}", event.getApplicationId());
+                    return Mono.empty();
+                })
+                .subscribe();
     }
 }
 

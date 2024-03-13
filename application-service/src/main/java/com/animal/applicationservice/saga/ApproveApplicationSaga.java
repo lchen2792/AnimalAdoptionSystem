@@ -42,10 +42,13 @@ public class ApproveApplicationSaga {
     public void handle(ApplicationApprovedEvent event){
         log.info("application approved {}", event);
 
-        paymentId = event.getPaymentId();
         queryGateway
-                .query(FetchApplicationByIdQuery.class, ResponseTypes.instanceOf(Application.class))
+                .query(
+                        FetchApplicationByIdQuery.builder().applicationId(event.getApplicationId()).build(),
+                        ResponseTypes.instanceOf(Application.class)
+                )
                 .switchIfEmpty(Mono.error(new IllegalArgumentException(event.getApplicationId())))
+                .doOnSuccess(application -> paymentId = application.getPaymentId())
                 .map(Application::getAnimalProfileId)
                 .flatMap(id -> {
                     AdoptAnimalCommand adoptAnimalCommand = AdoptAnimalCommand
@@ -66,63 +69,10 @@ public class ApproveApplicationSaga {
                 .subscribe();
     }
 
+    @EndSaga
     @SagaEventHandler(associationProperty = "animalProfileId")
     public void handle(AnimalAdoptedEvent event) {
         log.info("animal adopted {}", event);
-        ConfirmPaymentCommand confirmPaymentCommand = ConfirmPaymentCommand
-                .builder()
-                .paymentId(paymentId)
-                .applicationId(event.getApplicationId())
-                .build();
-
-        queryGateway
-                .query(
-                        FetchPaymentIntentIdByIdQuery.builder().paymentId(paymentId).build(),
-                        ResponseTypes.instanceOf(String.class)
-                )
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("failed to find payment " + paymentId)))
-                .flatMap(paymentIntentId -> webClient.put()
-                        .uri("/confirm-payment/" + paymentIntentId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .retrieve()
-                        .bodyToMono(Boolean.class)
-                        .retryWhen(Retry
-                                .backoff(5, Duration.ofMinutes(1))
-                                .jitter(0.75)
-                                .onRetryExhaustedThrow((spec, signal) -> new RemoteServiceNotAvailableException())
-                        )
-                        .filter(res -> true)
-                        .switchIfEmpty(Mono.error(new IllegalArgumentException("failed to confirm payment " + paymentIntentId)))
-
-                )
-                .flatMap(res -> commandGateway.send(confirmPaymentCommand))
-                .onErrorResume(err -> {
-                    log.error("failed to confirm payment: {}", err.getMessage());
-                    ReserveAnimalCommand reserveAnimalCommand = ReserveAnimalCommand
-                            .builder()
-                            .applicationId(event.getApplicationId())
-                            .animalProfileId(event.getAnimalProfileId())
-                            .build();
-                    return commandGateway.send(reserveAnimalCommand);
-                })
-                .subscribe();
-    }
-
-    @EndSaga
-    @SagaEventHandler(associationProperty = "applicationId")
-    public void handle(PaymentConfirmedEvent event) {
-        log.info("payment confirmed {}", event);
-    }
-
-    @SagaEventHandler(associationProperty =  "applicationId")
-    public void handle(AnimalReservedEvent event) {
-        log.info("animal adopted reverted to reserved : {}", event);
-
-        UndoReviewCommand undoReviewCommand = UndoReviewCommand
-                .builder()
-                .applicationId(event.getApplicationId())
-                .build();
-        commandGateway.send(undoReviewCommand).subscribe();
     }
 
     @EndSaga
@@ -130,6 +80,13 @@ public class ApproveApplicationSaga {
     public void handle(ReviewUndoneEvent event) {
         log.info("application review undone {}", event);
         RequestReviewCommand requestReviewCommand = RequestReviewCommand.builder().applicationId(event.getApplicationId()).build();
+        commandGateway.send(requestReviewCommand)
+                .retryWhen(Retry.backoff(5, Duration.ofMinutes(1)).jitter(0.75))
+                .onErrorResume(err -> {
+                    log.error("failed to request review for application {}", event.getApplicationId());
+                    return Mono.empty();
+                })
+                .subscribe();
     }
 }
 

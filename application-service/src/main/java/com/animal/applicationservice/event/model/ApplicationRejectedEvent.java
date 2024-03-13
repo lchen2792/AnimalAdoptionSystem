@@ -14,7 +14,6 @@ import java.io.Serializable;
 @Builder
 public class ApplicationRejectedEvent implements Serializable {
     private String applicationId;
-    private String paymentId;
     private ApplicationStatus applicationStatus;
     private String message;
 }
