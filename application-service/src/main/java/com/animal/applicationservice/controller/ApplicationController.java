@@ -8,6 +8,7 @@ import com.animal.applicationservice.controller.model.CreateApplicationRequest;
 import com.animal.applicationservice.controller.model.Notification;
 import com.animal.applicationservice.controller.model.ReviewApplicationRequest;
 import com.animal.applicationservice.data.model.Application;
+import com.animal.applicationservice.data.model.ApplicationStatus;
 import com.animal.applicationservice.data.model.ApplicationStatusSummary;
 import com.animal.applicationservice.data.repository.ApplicationRepository;
 import com.animal.applicationservice.exception.ApplicationLimitException;
@@ -18,14 +19,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.axonframework.extensions.reactor.commandhandling.gateway.ReactorCommandGateway;
 import org.axonframework.extensions.reactor.queryhandling.gateway.ReactorQueryGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
-import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +33,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -121,16 +119,25 @@ public class ApplicationController {
 
     @PutMapping("/review")
     public Mono<ResponseEntity<String>> reviewApplication(@RequestBody ReviewApplicationRequest request){
-            return commandGateway
-                    .send(request.getApprove()
-                            ? ApproveApplicationCommand.builder().applicationId(request.getApplicationId()).build()
-                            : RejectApplicationCommand.builder().applicationId(request.getApplicationId()).message(request.getComment()).build()
-                    )
-                    .map(res -> ResponseEntity.ok(res.toString()))
-                    .onErrorResume(err -> {
-                        log.error(err.getMessage());
-                        return Mono.just(ResponseEntity.internalServerError().body(err.getMessage()));
-                    });
+        return queryGateway
+                .query(
+                    FetchApplicationByIdQuery.builder().applicationId(request.getApplicationId()).build(),
+                    ResponseTypes.instanceOf(Application.class)
+                )
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("failed to find application " + request.getApplicationId())))
+                .filter(application -> application.getApplicationStatus().equals(ApplicationStatus.SUBMITTED))
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("false application status")))
+                .then(commandGateway
+                        .send(request.getApprove()
+                                ? ApproveApplicationCommand.builder().applicationId(request.getApplicationId()).build()
+                                : RejectApplicationCommand.builder().applicationId(request.getApplicationId()).message(request.getComment()).build()
+                        )
+                        .map(res -> ResponseEntity.ok(res.toString()))
+                )
+                .onErrorResume(err -> {
+                    log.error(err.getMessage());
+                    return Mono.just(ResponseEntity.internalServerError().body(err.getMessage()));
+                });
     }
 
     @GetMapping(value = "/review/notification")

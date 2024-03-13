@@ -3,12 +3,11 @@ package com.animal.applicationservice.saga;
 import com.animal.applicationservice.command.model.RequestReviewCommand;
 import com.animal.applicationservice.command.model.UndoReviewCommand;
 import com.animal.applicationservice.data.model.Application;
+import com.animal.applicationservice.data.model.ApplicationStatus;
 import com.animal.applicationservice.event.model.*;
-import com.animal.applicationservice.exception.RemoteServiceNotAvailableException;
 import com.animal.applicationservice.query.model.FetchApplicationByIdQuery;
 import com.animal.common.command.*;
 import com.animal.common.event.*;
-import com.animal.common.query.FetchPaymentIntentIdByIdQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.extensions.reactor.commandhandling.gateway.ReactorCommandGateway;
 import org.axonframework.extensions.reactor.queryhandling.gateway.ReactorQueryGateway;
@@ -16,10 +15,8 @@ import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.modelling.saga.EndSaga;
 import org.axonframework.modelling.saga.SagaEventHandler;
 import org.axonframework.modelling.saga.StartSaga;
-import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.axonframework.spring.stereotype.Saga;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
@@ -47,7 +44,9 @@ public class ApproveApplicationSaga {
                         FetchApplicationByIdQuery.builder().applicationId(event.getApplicationId()).build(),
                         ResponseTypes.instanceOf(Application.class)
                 )
-                .switchIfEmpty(Mono.error(new IllegalArgumentException(event.getApplicationId())))
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("failed to find application " + event.getApplicationId())))
+                .filter(application -> application.getApplicationStatus().equals(ApplicationStatus.APPROVED))
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("false application status" + event.getApplicationId())))
                 .doOnSuccess(application -> paymentId = application.getPaymentId())
                 .map(Application::getAnimalProfileId)
                 .flatMap(id -> {
@@ -70,7 +69,7 @@ public class ApproveApplicationSaga {
     }
 
     @EndSaga
-    @SagaEventHandler(associationProperty = "animalProfileId")
+    @SagaEventHandler(associationProperty = "applicationId")
     public void handle(AnimalAdoptedEvent event) {
         log.info("animal adopted {}", event);
     }

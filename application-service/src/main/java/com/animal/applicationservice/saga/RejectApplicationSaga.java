@@ -3,6 +3,7 @@ package com.animal.applicationservice.saga;
 import com.animal.applicationservice.command.model.RequestReviewCommand;
 import com.animal.applicationservice.command.model.UndoReviewCommand;
 import com.animal.applicationservice.data.model.Application;
+import com.animal.applicationservice.data.model.ApplicationStatus;
 import com.animal.applicationservice.event.model.*;
 import com.animal.applicationservice.query.model.FetchApplicationByIdQuery;
 import com.animal.common.command.*;
@@ -43,6 +44,8 @@ public class RejectApplicationSaga {
                         ResponseTypes.instanceOf(Application.class)
                 )
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("failed to find application " + event.getApplicationId())))
+                .filter(application -> application.getApplicationStatus().equals(ApplicationStatus.REJECTED))
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("false application status" + event.getApplicationId())))
                 .map(application -> ReleaseAnimalForRejectionCommand
                         .builder()
                         .applicationId(application.getApplicationId())
@@ -64,7 +67,7 @@ public class RejectApplicationSaga {
     }
 
     @EndSaga
-    @SagaEventHandler(associationProperty = "animalProfileId")
+    @SagaEventHandler(associationProperty = "applicationId")
     public void handle(AnimalReleasedForRejectionEvent event) {
         log.info("animal released due to rejected application {}", event);
     }
