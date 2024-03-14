@@ -74,18 +74,17 @@ public class ApproveApplicationSaga {
         log.info("animal adopted {}", event);
     }
 
-    @EndSaga
     @SagaEventHandler(associationProperty = "applicationId")
     public void handle(ReviewUndoneEvent event) {
         log.info("application review undone {}", event);
         RequestReviewCommand requestReviewCommand = RequestReviewCommand.builder().applicationId(event.getApplicationId()).build();
-        commandGateway.send(requestReviewCommand)
-                .retryWhen(Retry.backoff(5, Duration.ofMinutes(1)).jitter(0.75))
-                .onErrorResume(err -> {
-                    log.error("failed to request review for application {}", event.getApplicationId());
-                    return Mono.empty();
-                })
-                .subscribe();
+        commandGateway.send(requestReviewCommand).subscribe();
+    }
+
+    @EndSaga
+    @SagaEventHandler(associationProperty = "applicationId")
+    public void handle(ReviewRequestedEvent event){
+        log.info("review requested {}", event);
     }
 }
 

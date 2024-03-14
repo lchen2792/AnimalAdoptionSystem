@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="application-service" />
         <module name="authentication-service" />
+        <module name="auth-service" />
         <module name="payment-service" />
         <module name="common" />
         <module name="animal-service" />
@@ -24,6 +25,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="animal-service" options="-parameters" />
       <module name="application-service" options="-parameters" />
+      <module name="auth-service" options="-parameters" />
       <module name="authentication-service" options="-parameters" />
       <module name="common" options="-parameters" />
       <module name="message-service" options="-parameters" />
