@@ -78,6 +78,7 @@ public class AnimalProfileService {
 
     public CompletableFuture<List<AnimalProfileForMatch>> findAnimalProfileByCriteriaFallback(
             FindAnimalProfilesByCriteriaRequest request,
+            String jwtToken,
             Throwable ex) {
         log.error(ex.getMessage());
         return CompletableFuture.failedFuture(new RemoteServiceNotAvailableException());

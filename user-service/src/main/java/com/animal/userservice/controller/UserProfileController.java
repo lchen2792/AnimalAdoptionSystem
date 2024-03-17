@@ -88,7 +88,7 @@ public class UserProfileController {
     }
 
     @PutMapping("/{userProfileId}/payment")
-    public CompletableFuture<String> updatePaymentDetail(
+    public String updatePaymentDetail(
             @PathVariable String userProfileId,
             @RequestBody ValidatePaymentMethodRequest paymentDetail,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken) {
@@ -99,17 +99,19 @@ public class UserProfileController {
                     curUserProfile.setCustomerId(customerId);
                     userProfileService.updateUserProfile(curUserProfile);
                     return "payment validated and updated";
-                });
+                })
+                .join();
     }
 
     @DeleteMapping("/{userProfileId}")
-    public CompletableFuture<String> deleteUserProfile(
+    public String deleteUserProfile(
             @PathVariable String userProfileId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken) {
 
         return paymentProcessingService
                 .deletePaymentMethod(userProfileService.findUserProfileById(userProfileId).getCustomerId(), jwtToken)
-                .thenApply(customerId -> userProfileService.deleteUserProfile(userProfileId));
+                .thenApply(customerId -> userProfileService.deleteUserProfile(userProfileId))
+                .join();
     }
 }
 

@@ -31,23 +31,23 @@ public class AnimalQueryHandler {
         Criteria criteria = new Criteria().and("status").is(AnimalStatus.OPEN);
 
         if (!StringUtils.isEmpty(query.getSpecies())) {
-            criteria.and("species").is(query.getSpecies());
+            criteria.and("basicInformation.species").is(query.getSpecies());
         }
         if (!StringUtils.isEmpty(query.getBreed())) {
-            criteria.and("breed").is(query.getBreed());
+            criteria.and("basicInformation.breed").is(query.getBreed());
         }
         if (query.getAgeMin() != null && query.getAgeMax() != null) {
-            criteria.and("age").gte(query.getAgeMin()).lte(query.getAgeMax());
+            criteria.and("basicInformation.age").gte(query.getAgeMin()).lte(query.getAgeMax());
         } else if (query.getAgeMin() != null) {
-            criteria.and("age").gte(query.getAgeMin());
+            criteria.and("basicInformation.age").gte(query.getAgeMin());
         } else if (query.getAgeMax() != null) {
-            criteria.and("age").lte(query.getAgeMax());
+            criteria.and("basicInformation.age").lte(query.getAgeMax());
         }
         if (!StringUtils.isEmpty(query.getGender())) {
-            criteria.and("gender").is(query.getGender());
+            criteria.and("basicInformation.gender").is(query.getGender());
         }
         if (query.getNeutered() != null) {
-            criteria.and("neutered").is(query.getNeutered());
+            criteria.and("basicInformation.neutered").is(query.getNeutered());
         }
 
         Query fetchAnimalProfilesByCriteriaQuery = new Query(criteria);

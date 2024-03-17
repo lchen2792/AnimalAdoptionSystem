@@ -29,7 +29,7 @@ public class GeminiService {
     @Autowired
     private WebClient webClient;
 
-    public CompletableFuture<Optional<Map<String, Double>>> match(UserProfileForMatch userProfile, List<AnimalProfileForMatch> animalProfiles, String jwtToken) {
+    public CompletableFuture<Optional<Map<String, Number>>> match(UserProfileForMatch userProfile, List<AnimalProfileForMatch> animalProfiles) {
         Map<String, String> text1 = Map.of("text", "Order the list of animals according to how closely they match this user");
         Map<String, String> text2 = Map.of("text", "This is the user profile: " + JsonUtil.writeValueAsString(userProfile));
         String animalProfileText = animalProfiles.stream().map(JsonUtil::writeValueAsString).collect(Collectors.joining(", ", "[", "]"));
@@ -45,16 +45,16 @@ public class GeminiService {
         return webClient
                 .post()
                 .uri(baseUrl + "?key=" + secretKey)
-                .header(HttpHeaders.AUTHORIZATION, jwtToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(contents))
                 .retrieve()
                 .bodyToMono(Object.class)
                 .map(this::parseResponse)
+                .log()
                 .toFuture();
     }
 
-    private Optional<Map<String, Double>> parseResponse(Object response) {
+    private Optional<Map<String, Number>> parseResponse(Object response) {
         log.info(response.toString());
         return Optional
                 .ofNullable((Map<String, Object>) response)
@@ -71,6 +71,6 @@ public class GeminiService {
                         return null;
                     }
                 })
-                .map(map -> (Map<String, Double>) map);
+                .map(map -> (Map<String, Number>) map);
     }
 }

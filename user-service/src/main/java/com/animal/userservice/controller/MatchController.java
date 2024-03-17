@@ -8,6 +8,7 @@ import com.animal.userservice.service.GeminiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -22,14 +23,15 @@ public class MatchController {
     private transient AnimalProfileService animalProfileService;
 
     @PostMapping("/animals")
-    public CompletableFuture<Map<String, Double>> match(
+    public Map<String, Number> match(
             @RequestBody MatchAnimalRequest request,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken){
         return animalProfileService
                 .findAnimalProfileByCriteria(request.getRequest(), jwtToken)
                 .thenComposeAsync(animalProfileForMatches ->
-                        geminiService.match(request.getUserProfileForMatch(), animalProfileForMatches, jwtToken)
+                        geminiService.match(request.getUserProfileForMatch(), animalProfileForMatches)
                 )
-                .thenApplyAsync(res -> res.orElseThrow(MatchingException::new));
+                .thenApply(res -> res.orElseThrow(MatchingException::new))
+                .join();
     }
 }

@@ -42,7 +42,10 @@ public class PaymentProcessingService {
                 .toFuture();
     }
 
-    public CompletableFuture<String> validatePaymentFallback(ValidatePaymentMethodRequest validatePaymentMethodRequest, Throwable ex) {
+    public CompletableFuture<String> validatePaymentFallback(
+            ValidatePaymentMethodRequest validatePaymentMethodRequest,
+            String jwtToken,
+            Throwable ex) {
         return CompletableFuture.failedFuture(new RemoteServiceNotAvailableException());
     }
 
@@ -60,7 +63,10 @@ public class PaymentProcessingService {
                 .toFuture();
     }
 
-    public CompletableFuture<String> deletePaymentMethodFallback(String customerId, Throwable ex){
+    public CompletableFuture<String> deletePaymentMethodFallback(
+            String customerId,
+            String jwtToken,
+            Throwable ex){
         return CompletableFuture.failedFuture(new RemoteServiceNotAvailableException());
     }
 }
