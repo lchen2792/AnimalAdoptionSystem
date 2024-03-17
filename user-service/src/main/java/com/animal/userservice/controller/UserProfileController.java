@@ -1,5 +1,6 @@
 package com.animal.userservice.controller;
 
+import com.animal.common.constant.Constants;
 import com.animal.userservice.controller.model.CreateUserProfileRequest;
 import com.animal.userservice.controller.model.UpdateUserProfileRequest;
 import com.animal.userservice.controller.model.ValidatePaymentMethodRequest;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -86,10 +88,13 @@ public class UserProfileController {
     }
 
     @PutMapping("/{userProfileId}/payment")
-    public CompletableFuture<String> updatePaymentDetail(@PathVariable String userProfileId, @RequestBody ValidatePaymentMethodRequest paymentDetail) {
+    public CompletableFuture<String> updatePaymentDetail(
+            @PathVariable String userProfileId,
+            @RequestBody ValidatePaymentMethodRequest paymentDetail,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken) {
         UserProfile curUserProfile = findUserProfileById(userProfileId);
         return paymentProcessingService
-                .validatePaymentMethod(paymentDetail)
+                .validatePaymentMethod(paymentDetail, jwtToken)
                 .thenApply(customerId -> {
                     curUserProfile.setCustomerId(customerId);
                     userProfileService.updateUserProfile(curUserProfile);
@@ -98,9 +103,12 @@ public class UserProfileController {
     }
 
     @DeleteMapping("/{userProfileId}")
-    public CompletableFuture<String> deleteUserProfile(@PathVariable String userProfileId){
+    public CompletableFuture<String> deleteUserProfile(
+            @PathVariable String userProfileId,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken) {
+
         return paymentProcessingService
-                .deletePaymentMethod(userProfileService.findUserProfileById(userProfileId).getCustomerId())
+                .deletePaymentMethod(userProfileService.findUserProfileById(userProfileId).getCustomerId(), jwtToken)
                 .thenApply(customerId -> userProfileService.deleteUserProfile(userProfileId));
     }
 }

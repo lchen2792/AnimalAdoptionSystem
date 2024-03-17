@@ -1,5 +1,6 @@
 package com.animal.userservice.service;
 
+import com.animal.common.constant.Constants;
 import com.animal.userservice.controller.model.AnimalProfileForMatch;
 import com.animal.userservice.controller.model.FindAnimalProfilesByCriteriaRequest;
 import com.animal.userservice.exception.RemoteServiceNotAvailableException;
@@ -8,6 +9,7 @@ import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.client.HttpGraphQlClient;
+import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +26,9 @@ public class AnimalProfileService {
     @Async
     @Retry(name = ANIMAL_SERVICE)
     @CircuitBreaker(name = ANIMAL_SERVICE, fallbackMethod = "findAnimalProfileByCriteriaFallback")
-    public CompletableFuture<List<AnimalProfileForMatch>> findAnimalProfileByCriteria(FindAnimalProfilesByCriteriaRequest request){
+    public CompletableFuture<List<AnimalProfileForMatch>> findAnimalProfileByCriteria(
+            FindAnimalProfilesByCriteriaRequest request,
+            String jwtToken){
         String document = """
                 query($request: FindAnimalProfilesByCriteriaRequest!) {
                     findAnimalProfilesByCriteria(request: $request) {
@@ -62,6 +66,9 @@ public class AnimalProfileService {
                 """;
 
         return httpGraphQlClient
+                .mutate()
+                .header(HttpHeaders.AUTHORIZATION, jwtToken)
+                .build()
                 .document(document)
                 .variable("request", request)
                 .retrieve("findAnimalProfilesByCriteria")

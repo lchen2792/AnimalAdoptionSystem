@@ -1,9 +1,8 @@
 package com.animal.authservice.config;
 
-import com.animal.authservice.model.Role;
-import com.animal.authservice.model.UserRole;
 import com.animal.authservice.service.JwtService;
 import com.animal.authservice.service.UserService;
+import com.animal.common.constant.Constants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,13 +11,10 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -43,12 +39,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
         jwtService.resolveToken(request).ifPresentOrElse(claims -> {
                 if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UserDetails userDetails = userService.loadUserByUsername(claims.get("subject").toString());
-                    Set<SimpleGrantedAuthority> authorities = ((List<LinkedHashMap<String, String>>) claims.get("authorities")).stream().map(a -> a.get("authority"))
+                    Set<SimpleGrantedAuthority> authorities = ((List<LinkedHashMap<String, String>>) claims.get(Constants.SPRING_SECURITY_AUTHORITIES)).stream().map(a -> a.get("authority"))
                             .map(SimpleGrantedAuthority::new)
                             .collect(Collectors.toSet());
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails,
+                            claims.get(Constants.SPRING_SECURITY_SUBJECT).toString(),
                             null,
                             authorities
                     );

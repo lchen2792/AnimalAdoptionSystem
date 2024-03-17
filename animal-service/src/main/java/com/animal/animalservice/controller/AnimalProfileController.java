@@ -36,15 +36,15 @@ public class AnimalProfileController {
 
     @QueryMapping
     public CompletableFuture<AnimalProfile> findAnimalProfileById(@Argument String animalProfileId){
-           return queryGateway
-                   .query(
-                           FetchAnimalProfileByIdQuery.builder().animalProfileId(animalProfileId).build(),
-                           ResponseTypes.instanceOf(AnimalProfile.class)
-                   )
-                   .exceptionally(err -> {
-                       log.error("animal profile " + err.getMessage() + " not found");
-                       return null;
-                   });
+        return queryGateway
+                .query(
+                        FetchAnimalProfileByIdQuery.builder().animalProfileId(animalProfileId).build(),
+                        ResponseTypes.instanceOf(AnimalProfile.class)
+                )
+                .exceptionally(err -> {
+                    log.error("animal profile " + err.getMessage() + " not found");
+                    return null;
+                });
     }
 
     @QueryMapping

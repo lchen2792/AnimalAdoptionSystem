@@ -1,11 +1,13 @@
 package com.animal.userservice.service;
 
+import com.animal.common.constant.Constants;
 import com.animal.userservice.controller.model.AnimalProfileForMatch;
 import com.animal.userservice.controller.model.UserProfileForMatch;
 import com.animal.userservice.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -27,7 +29,7 @@ public class GeminiService {
     @Autowired
     private WebClient webClient;
 
-    public CompletableFuture<Optional<Map<String, Double>>> match(UserProfileForMatch userProfile, List<AnimalProfileForMatch> animalProfiles) {
+    public CompletableFuture<Optional<Map<String, Double>>> match(UserProfileForMatch userProfile, List<AnimalProfileForMatch> animalProfiles, String jwtToken) {
         Map<String, String> text1 = Map.of("text", "Order the list of animals according to how closely they match this user");
         Map<String, String> text2 = Map.of("text", "This is the user profile: " + JsonUtil.writeValueAsString(userProfile));
         String animalProfileText = animalProfiles.stream().map(JsonUtil::writeValueAsString).collect(Collectors.joining(", ", "[", "]"));
@@ -43,6 +45,7 @@ public class GeminiService {
         return webClient
                 .post()
                 .uri(baseUrl + "?key=" + secretKey)
+                .header(HttpHeaders.AUTHORIZATION, jwtToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(contents))
                 .retrieve()

@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.WebExchangeBindException;
@@ -20,6 +21,11 @@ public class PaymentController {
     private transient PaymentService paymentService;
     @Value("${stripe.application-fee}")
     private Long applicationFee;
+
+    @GetMapping("/test")
+    public Mono<String> test(){
+        return Mono.just("test api");
+    }
 
     @PostMapping("/validate-payment-method")
     public Mono<ResponseEntity<String>> validate(@RequestBody @Validated Mono<ValidatePaymentMethodRequest> paymentDetail) {

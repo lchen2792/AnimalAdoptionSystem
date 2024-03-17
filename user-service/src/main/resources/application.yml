@@ -10,6 +10,9 @@ axon:
 spring:
   application:
     name: user-service
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   servlet:
     multipart:
       enabled: true
@@ -18,6 +21,9 @@ spring:
       uri: mongodb+srv://root:root@cluster0.gf4mguw.mongodb.net/?retryWrites=true&w=majority
       database: cluster0
       port: 271017
+  security:
+    token:
+      secret-key: MgtqlZi01l05/3fpeck2ZFwtjeqxrndplJK0acQ4l/pPj+pY5yo+DAGx/24ejx/8Icj+mJXtsCl+xfWVwezzAjmchy5A8VlQmBFmFr3uelw=
 
 resilience4j:
   circuitbreaker:
@@ -66,3 +72,4 @@ gemini:
 animal:
   profile:
     base-url: http://localhost:9091/graphql
+
