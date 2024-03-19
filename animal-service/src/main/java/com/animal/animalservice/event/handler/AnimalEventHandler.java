@@ -30,6 +30,8 @@ public class AnimalEventHandler {
 
     @EventHandler
     public void handle(AnimalCreatedEvent event){
+        log.info("{}", event);
+
         AnimalProfile animalProfile = new AnimalProfile();
         BeanUtils.copyProperties(event, animalProfile);
         animalProfileRepository.save(animalProfile);
@@ -37,6 +39,8 @@ public class AnimalEventHandler {
 
     @EventHandler
     public void handle(AnimalUpdatedEvent event) {
+        log.info("{}", event);
+
         animalProfileRepository
                 .findById(event.getAnimalProfileId())
                 .map(animalProfile -> {
@@ -51,6 +55,7 @@ public class AnimalEventHandler {
 
     @EventHandler
     public void handle(AnimalAdoptedEvent event) {
+        log.info("{}", event);
         animalProfileRepository
                 .findById(event.getAnimalProfileId())
                 .map(animalProfile -> {
@@ -65,6 +70,8 @@ public class AnimalEventHandler {
 
     @EventHandler
     public void handle(AnimalDeletedEvent event){
+        log.info("{}", event);
+
         animalProfileRepository
                 .findById(event.getAnimalProfileId())
                 .map(animalProfile -> {
@@ -87,7 +94,8 @@ public class AnimalEventHandler {
 
     @EventHandler
     public void handle(AnimalReservedEvent event) {
-        log.info("animal reserved event processed");
+        log.info("{}", event);
+
         animalProfileRepository
                 .findById(event.getAnimalProfileId())
                 .map(animalProfile -> {
@@ -102,6 +110,8 @@ public class AnimalEventHandler {
 
     @EventHandler
     public void handle(AnimalReleasedEvent event) {
+        log.info("{}", event);
+
         animalProfileRepository
                 .findById(event.getAnimalProfileId())
                 .map(animalProfile -> {
@@ -116,6 +126,8 @@ public class AnimalEventHandler {
 
     @EventHandler
     public void handle(AnimalReleasedForRejectionEvent event){
+        log.info("{}", event);
+
         animalProfileRepository
                 .findById(event.getAnimalProfileId())
                 .map(animalProfile -> {
@@ -130,6 +142,8 @@ public class AnimalEventHandler {
 
     @EventHandler
     public void handle(AnimalMediaUploadedEvent event) {
+        log.info("{}", event);
+
         animalProfileRepository
                 .findById(event.getAnimalProfileId())
                 .map(animalProfile -> {
@@ -150,6 +164,8 @@ public class AnimalEventHandler {
 
     @EventHandler
     public void handle(AnimalMediaDeletedEvent event) {
+        log.info("{}", event);
+
         animalProfileRepository
                 .findById(event.getAnimalProfileId())
                 .map(animalProfile ->  {

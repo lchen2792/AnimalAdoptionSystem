@@ -4,9 +4,6 @@ server:
 spring:
   application:
     name: animal-service
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
   servlet:
     multipart:
       enabled: true
@@ -20,9 +17,6 @@ spring:
   graphql:
     graphiql:
       enabled: true
-  security:
-    token:
-      secret-key: MgtqlZi01l05/3fpeck2ZFwtjeqxrndplJK0acQ4l/pPj+pY5yo+DAGx/24ejx/8Icj+mJXtsCl+xfWVwezzAjmchy5A8VlQmBFmFr3uelw=
 
 axon:
   serializer:

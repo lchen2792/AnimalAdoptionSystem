@@ -1,32 +1,29 @@
-package com.animal.animalservice.query.handler;
+package com.animal.animalservice.service;
 
+import com.animal.animalservice.controller.request.FindAnimalProfilesByCriteriaRequest;
 import com.animal.animalservice.data.model.AnimalProfile;
 import com.animal.common.status.AnimalStatus;
 import com.animal.animalservice.data.repository.AnimalProfileRepository;
 import com.animal.animalservice.exception.AnimalProfileNotFoundException;
-import com.animal.animalservice.query.model.FetchAnimalProfileByIdQuery;
-import com.animal.animalservice.query.model.FetchAnimalProfilesByCriteriaQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.axonframework.queryhandling.QueryHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 @Slf4j
-public class AnimalQueryHandler {
+public class AnimalProfileService {
     @Autowired
     private transient AnimalProfileRepository animalProfileRepository;
     @Autowired
     private transient MongoTemplate mongoTemplate;
 
-    @QueryHandler
-    public List<AnimalProfile> handle(FetchAnimalProfilesByCriteriaQuery query) {
+    public List<AnimalProfile> findByCriteria(FindAnimalProfilesByCriteriaRequest query) {
         log.info("handling query {}", query);
         Criteria criteria = new Criteria().and("status").is(AnimalStatus.OPEN);
 
@@ -59,12 +56,12 @@ public class AnimalQueryHandler {
         return mongoTemplate.find(fetchAnimalProfilesByCriteriaQuery, AnimalProfile.class);
     }
 
-    @QueryHandler
-    public AnimalProfile handle(FetchAnimalProfileByIdQuery query){
-        log.info("handling query {}", query);
+    public AnimalProfile findById(String animalProfileId){
+        log.info("handling query {}", animalProfileId);
         return animalProfileRepository
-                .findById(query.getAnimalProfileId())
-                .orElseThrow(() -> new AnimalProfileNotFoundException(query.getAnimalProfileId()));
+                .findById(animalProfileId)
+                .orElseThrow(() -> new AnimalProfileNotFoundException(animalProfileId));
     }
 }
+
 

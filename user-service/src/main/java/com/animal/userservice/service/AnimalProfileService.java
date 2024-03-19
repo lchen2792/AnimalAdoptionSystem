@@ -27,8 +27,7 @@ public class AnimalProfileService {
     @Retry(name = ANIMAL_SERVICE)
     @CircuitBreaker(name = ANIMAL_SERVICE, fallbackMethod = "findAnimalProfileByCriteriaFallback")
     public CompletableFuture<List<AnimalProfileForMatch>> findAnimalProfileByCriteria(
-            FindAnimalProfilesByCriteriaRequest request,
-            String jwtToken){
+            FindAnimalProfilesByCriteriaRequest request){
         String document = """
                 query($request: FindAnimalProfilesByCriteriaRequest!) {
                     findAnimalProfilesByCriteria(request: $request) {
@@ -67,7 +66,6 @@ public class AnimalProfileService {
 
         return httpGraphQlClient
                 .mutate()
-                .header(HttpHeaders.AUTHORIZATION, jwtToken)
                 .build()
                 .document(document)
                 .variable("request", request)
@@ -78,7 +76,6 @@ public class AnimalProfileService {
 
     public CompletableFuture<List<AnimalProfileForMatch>> findAnimalProfileByCriteriaFallback(
             FindAnimalProfilesByCriteriaRequest request,
-            String jwtToken,
             Throwable ex) {
         log.error(ex.getMessage());
         return CompletableFuture.failedFuture(new RemoteServiceNotAvailableException());

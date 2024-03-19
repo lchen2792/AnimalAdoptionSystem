@@ -152,7 +152,7 @@ public class AnimalAggregate {
             throw new AnimalStatusNotMatchException(command.getAnimalProfileId(), AnimalStatus.RESERVED, this.status);
         }
 
-        AggregateLifecycle.apply(AnimalReleasedEvent
+        AggregateLifecycle.apply(AnimalAdoptedEvent
                 .builder()
                 .animalProfileId(command.getAnimalProfileId())
                 .userProfileId(command.getUserProfileId())
@@ -164,6 +164,7 @@ public class AnimalAggregate {
 
     @EventSourcingHandler
     public void handle(AnimalAdoptedEvent event) {
+        log.info("animal adopted event processed");
         this.status = event.getStatus();
     }
 

@@ -6,12 +6,9 @@ import com.animal.animalservice.controller.request.CreateAnimalProfileRequest;
 import com.animal.animalservice.controller.request.FindAnimalProfilesByCriteriaRequest;
 import com.animal.animalservice.controller.request.UpdateAnimalProfileRequest;
 import com.animal.animalservice.data.model.AnimalProfile;
-import com.animal.animalservice.query.model.FetchAnimalProfileByIdQuery;
-import com.animal.animalservice.query.model.FetchAnimalProfilesByCriteriaQuery;
+import com.animal.animalservice.service.AnimalProfileService;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
-import org.axonframework.messaging.responsetypes.ResponseTypes;
-import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
@@ -28,35 +25,20 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class AnimalProfileController {
     @Autowired
-    private transient QueryGateway queryGateway;
+    private transient AnimalProfileService animalProfileService;
     @Autowired
     private transient CommandGateway commandGateway;
     @Autowired
     private transient GridFsTemplate gridFsTemplate;
 
     @QueryMapping
-    public CompletableFuture<AnimalProfile> findAnimalProfileById(@Argument String animalProfileId){
-        return queryGateway
-                .query(
-                        FetchAnimalProfileByIdQuery.builder().animalProfileId(animalProfileId).build(),
-                        ResponseTypes.instanceOf(AnimalProfile.class)
-                )
-                .exceptionally(err -> {
-                    log.error("animal profile " + err.getMessage() + " not found");
-                    return null;
-                });
+    public AnimalProfile findAnimalProfileById(@Argument String animalProfileId){
+        return animalProfileService.findById(animalProfileId);
     }
 
     @QueryMapping
-    public CompletableFuture<List<AnimalProfile>> findAnimalProfilesByCriteria(@Argument FindAnimalProfilesByCriteriaRequest request){
-        FetchAnimalProfilesByCriteriaQuery query = new FetchAnimalProfilesByCriteriaQuery();
-        BeanUtils.copyProperties(request, query);
-        return queryGateway
-                .query(query, ResponseTypes.multipleInstancesOf(AnimalProfile.class))
-                .exceptionally(err -> {
-                    log.error(err.getMessage());
-                    return List.of();
-                });
+    public List<AnimalProfile> findAnimalProfilesByCriteria(@Argument FindAnimalProfilesByCriteriaRequest request){
+        return animalProfileService.findByCriteria(request);
     }
 
     @MutationMapping
@@ -66,35 +48,18 @@ public class AnimalProfileController {
                 .animalProfileId(UUID.randomUUID().toString())
                 .build();
         BeanUtils.copyProperties(request, command);
-        return commandGateway.send(command)
-                .thenApply(result -> command.getAnimalProfileId())
-                .exceptionally(err -> {
-                    log.error(err.getMessage());
-                    return null;
-                });
+        return commandGateway.send(command);
     }
 
     @MutationMapping
     public CompletableFuture<String> updateAnimalProfileById(@Argument UpdateAnimalProfileRequest request){
         UpdateAnimalCommand command = new UpdateAnimalCommand();
         BeanUtils.copyProperties(request, command);
-        return commandGateway
-                .send(command)
-                .thenApply(res -> request.getAnimalProfileId())
-                .exceptionally(err -> {
-                    log.error(err.getMessage());
-                    return null;
-                });
+        return commandGateway.send(command);
     }
 
     @MutationMapping
     public CompletableFuture<String> deleteAnimalProfileById(@Argument String animalProfileId){
-        return commandGateway
-                .send(DeleteAnimalCommand.builder().animalProfileId(animalProfileId).build())
-                .thenApply(res -> animalProfileId)
-                .exceptionally(err -> {
-                    log.error(err.getMessage());
-                    return null;
-                });
+        return commandGateway.send(DeleteAnimalCommand.builder().animalProfileId(animalProfileId).build());
     }
 }

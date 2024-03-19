@@ -110,15 +110,11 @@ public class ApplicationController {
                                 .concatWith(res.updates())
                                 .timeout(Duration.ofSeconds(30))
                                 .doFinally(signal -> res.close()))
-                )
-                .onErrorComplete(err -> {
-                    log.error(err.getMessage());
-                    return true;
-                });
+                );
     }
 
     @PutMapping("/review")
-    public Mono<ResponseEntity<String>> reviewApplication(@RequestBody ReviewApplicationRequest request){
+    public Flux<ApplicationStatusSummary> reviewApplication(@RequestBody ReviewApplicationRequest request){
         return queryGateway
                 .query(
                     FetchApplicationByIdQuery.builder().applicationId(request.getApplicationId()).build(),
@@ -127,17 +123,25 @@ public class ApplicationController {
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("failed to find application " + request.getApplicationId())))
                 .filter(application -> application.getApplicationStatus().equals(ApplicationStatus.SUBMITTED))
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("false application status")))
-                .then(commandGateway
+                .flatMap(res -> commandGateway
                         .send(request.getApprove()
                                 ? ApproveApplicationCommand.builder().applicationId(request.getApplicationId()).build()
                                 : RejectApplicationCommand.builder().applicationId(request.getApplicationId()).message(request.getComment()).build()
                         )
-                        .map(res -> ResponseEntity.ok(res.toString()))
                 )
-                .onErrorResume(err -> {
-                    log.error(err.getMessage());
-                    return Mono.just(ResponseEntity.internalServerError().body(err.getMessage()));
-                });
+                .thenMany(queryGateway
+                        .subscriptionQuery(
+                                FetchApplicationStatusSummaryQuery.builder().applicationId(request.getApplicationId()).build(),
+                                ResponseTypes.instanceOf(ApplicationStatusSummary.class),
+                                ResponseTypes.instanceOf(ApplicationStatusSummary.class)
+                        )
+                        .flatMapMany(res -> res
+                                .initialResult()
+                                .concatWith(res.updates())
+                                .timeout(Duration.ofSeconds(30))
+                                .doFinally((signal) -> res.close())
+                        )
+                );
     }
 
     @GetMapping(value = "/review/notification")

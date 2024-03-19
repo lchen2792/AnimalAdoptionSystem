@@ -29,12 +29,10 @@ public class PaymentProcessingService {
     @Retry(name = PAYMENT_SERVICE)
     @CircuitBreaker(name = PAYMENT_SERVICE, fallbackMethod = "validatePaymentFallback")
     public CompletableFuture<String> validatePaymentMethod(
-            ValidatePaymentMethodRequest validatePaymentMethodRequest,
-            String jwtToken) {
+            ValidatePaymentMethodRequest validatePaymentMethodRequest) {
         return webClient
                 .post()
                 .uri(baseUrl + "/validate-payment-method")
-                .header(HttpHeaders.AUTHORIZATION, jwtToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromPublisher(Mono.just(validatePaymentMethodRequest), ValidatePaymentMethodRequest.class))
                 .retrieve()
@@ -44,7 +42,6 @@ public class PaymentProcessingService {
 
     public CompletableFuture<String> validatePaymentFallback(
             ValidatePaymentMethodRequest validatePaymentMethodRequest,
-            String jwtToken,
             Throwable ex) {
         return CompletableFuture.failedFuture(new RemoteServiceNotAvailableException());
     }
@@ -52,12 +49,10 @@ public class PaymentProcessingService {
     @Retry(name = PAYMENT_SERVICE)
     @CircuitBreaker(name = PAYMENT_SERVICE, fallbackMethod = "deletePaymentMethodFallback")
     public CompletableFuture<String> deletePaymentMethod(
-            String customerId,
-            String jwtToken) {
+            String customerId) {
         return webClient
                 .delete()
                 .uri(baseUrl + "/remove-payment-method/customer/" + customerId)
-                .header(HttpHeaders.AUTHORIZATION, jwtToken)
                 .retrieve()
                 .bodyToMono(String.class)
                 .toFuture();
@@ -65,7 +60,6 @@ public class PaymentProcessingService {
 
     public CompletableFuture<String> deletePaymentMethodFallback(
             String customerId,
-            String jwtToken,
             Throwable ex){
         return CompletableFuture.failedFuture(new RemoteServiceNotAvailableException());
     }
