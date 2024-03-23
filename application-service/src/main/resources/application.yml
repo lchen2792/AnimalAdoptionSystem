@@ -1,26 +1,10 @@
-application:
-  count:
-    max: 5
-
-web-client:
-  base-url: http://localhost:9092
-  # base-url: http://localhost:9000/payment-service
-
-server:
-  port: 9095
-
 spring:
-  data:
-    mongodb:
-      uri: mongodb+srv://root:root@cluster0.gf4mguw.mongodb.net/?retryWrites=true&w=majority
-      database: cluster0
-      port: 271017
-  security:
-    token:
-      secret-key: MgtqlZi01l05/3fpeck2ZFwtjeqxrndplJK0acQ4l/pPj+pY5yo+DAGx/24ejx/8Icj+mJXtsCl+xfWVwezzAjmchy5A8VlQmBFmFr3uelw=
-
-axon:
-  serializer:
-    general: jackson
-    events: jackson
-    messages: jackson
+  application:
+    name: application-service
+  config:
+    import: optional:configserver:http://localhost:8888
+  profiles:
+    active: dev
+  cloud:
+    config:
+      enabled: true

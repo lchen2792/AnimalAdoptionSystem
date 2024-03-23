@@ -1,75 +1,10 @@
-server:
-  port: 9093
-
-axon:
-  serializer:
-    general: jackson
-    events: jackson
-    messages: jackson
-
 spring:
   application:
     name: user-service
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
-  servlet:
-    multipart:
+  config:
+    import: optional:configserver:http://localhost:8888
+  profiles:
+    active: dev
+  cloud:
+    config:
       enabled: true
-  data:
-    mongodb:
-      uri: mongodb+srv://root:root@cluster0.gf4mguw.mongodb.net/?retryWrites=true&w=majority
-      database: cluster0
-      port: 271017
-  security:
-    token:
-      secret-key: MgtqlZi01l05/3fpeck2ZFwtjeqxrndplJK0acQ4l/pPj+pY5yo+DAGx/24ejx/8Icj+mJXtsCl+xfWVwezzAjmchy5A8VlQmBFmFr3uelw=
-
-resilience4j:
-  circuitbreaker:
-    circuitbreaker-aspect-order: 1
-    instances:
-      payment-service:
-        failureRateThreshold: 50
-        permittedNumberOfCallsInHalfOpenState: 4
-        slidingWindowType: COUNT_BASED
-        slidingWindowSize: 10
-        minimumNumberOfCalls: 4
-        waitDurationInOpenState: 25s
-      animal-service:
-        failureRateThreshold: 60
-        permittedNumberOfCallsInHalfOpenState: 4
-        slidingWindowType: COUNT_BASED
-        slidingWindowSize: 10
-        minimumNumberOfCalls: 5
-        waitDurationInOpenState: 25s
-  retry:
-    retry-aspect-order: 2
-    instances:
-      payment-service:
-        max-retry-Attempts: 5
-        wait-duration: 1s
-        enableExponentialBackoff: true
-        exponentialBackoffMultiplier: 2
-        register-health-indicator: true
-      animal-service:
-        max-retry-Attempts: 3
-        wait-duration: 1s
-        enableExponentialBackoff: true
-        exponentialBackoffMultiplier: 2
-        register-health-indicator: true
-
-payment:
-  validation:
-    base-url: http://localhost:9092
-  # base-url: http://localhost:9000/payment-service
-
-gemini:
-  base-url: https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent
-  api:
-    key: AIzaSyC6Jxj20yBoELyATmA7kIo1tZw6_D6SlPU
-
-animal:
-  profile:
-    base-url: http://localhost:9091/graphql
-

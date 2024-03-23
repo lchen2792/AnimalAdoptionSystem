@@ -1,25 +1,10 @@
-server:
-  port: 8080
-
 spring:
   application:
-    name:
-      auth-service
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
-  jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-    hibernate:
-      ddl-auto: update
-  datasource:
-    password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    url: jdbc:mysql://localhost:3306/auth
-  security:
-    token:
-      life-time: 86400000
-      secret-key: MgtqlZi01l05/3fpeck2ZFwtjeqxrndplJK0acQ4l/pPj+pY5yo+DAGx/24ejx/8Icj+mJXtsCl+xfWVwezzAjmchy5A8VlQmBFmFr3uelw=
+    name: auth-service
+  config:
+    import: optional:configserver:http://localhost:8888
+  profiles:
+    active: dev
+  cloud:
+    config:
+      enabled: true

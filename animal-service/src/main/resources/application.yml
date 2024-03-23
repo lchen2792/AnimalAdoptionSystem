@@ -1,25 +1,10 @@
-server:
-  port: 9091
-
 spring:
   application:
     name: animal-service
-  servlet:
-    multipart:
+  config:
+    import: optional:configserver:http://localhost:8888
+  profiles:
+    active: dev
+  cloud:
+    config:
       enabled: true
-      max-file-size: 10MB
-      max-request-size: 50MB
-  data:
-    mongodb:
-      uri: mongodb+srv://root:root@cluster0.gf4mguw.mongodb.net/?retryWrites=true&w=majority
-      database: cluster0
-      port: 271017
-  graphql:
-    graphiql:
-      enabled: true
-
-axon:
-  serializer:
-    general: jackson
-    events: jackson
-    messages: jackson
