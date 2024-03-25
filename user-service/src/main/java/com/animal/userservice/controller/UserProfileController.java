@@ -4,6 +4,7 @@ import com.animal.userservice.controller.model.CreateUserProfileRequest;
 import com.animal.userservice.controller.model.UpdateUserProfileRequest;
 import com.animal.userservice.controller.model.ValidatePaymentMethodRequest;
 import com.animal.userservice.data.model.UserProfile;
+import com.animal.userservice.exception.UserProfileExistsException;
 import com.animal.userservice.service.PaymentProcessingService;
 import com.animal.userservice.service.UserProfileService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,13 +16,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user-profiles")
@@ -46,21 +45,16 @@ public class UserProfileController {
         return userProfileService.findUserProfiles(pageable);
     }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public String createUserProfile(@RequestPart CreateUserProfileRequest request, @RequestPart List<MultipartFile> files){
-        UserProfile userProfile = UserProfile.builder().build();
-        BeanUtils.copyProperties(request, userProfile);
-        List<Binary> identifications = files
-                .stream()
-                .map(file -> {
-                    try {
-                        return new Binary(BsonBinarySubType.BINARY, file.getBytes());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }).collect(Collectors.toList());
-        userProfile.setIdentifications(identifications);
-        return userProfileService.createUserProfile(userProfile);
+    @PostMapping
+    public String createUserProfile(@RequestBody CreateUserProfileRequest request, @RequestHeader("Auth-Email") String authEmail){
+        if (userProfileService.findUserProfileByAuthEmail(authEmail).isEmpty()) {
+            UserProfile userProfile = UserProfile.builder().build();
+            userProfile.setAuthEmail(authEmail);
+            BeanUtils.copyProperties(request, userProfile);
+            return userProfileService.createUserProfile(userProfile);
+        } else {
+            throw new UserProfileExistsException();
+        }
     }
 
     @PutMapping

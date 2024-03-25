@@ -6,8 +6,10 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public interface UserProfileRepository extends MongoRepository<UserProfile, String> {
 
+    Optional<UserProfile> findUserProfileByAuthEmail(String authEmail);
 }

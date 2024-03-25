@@ -1,43 +1,45 @@
 import React, { useState } from "react";
 import UserBasicInformation from "./UserBasicInformation";
+import LivingSituation from "./LivingSituation";
 
 
 export default function UserProfile({ token }) {
 
     const [formData, setFormData] = useState({
         basicInformation: {
-            name: {
-                firstName: "",
-                middleName: "",
-                lastName: ""
-            },
-            address: {
-                addressLine1: "",
-                addressLine2: "",
-                city: "",
-                state: "",
-                zipCode: ""
-            },
-            contact: {
-                phone: "",
-                email: ""
-            }
+            name_firstName: "",
+            name_middleName: "",
+            name_lastName: "",
+            address_addressLine1: "",
+            address_addressLine2: "",
+            address_city: "",
+            address_state: "",
+            address_zipCode: "",
+            contact_phone: "",
+            contact_email: ""
+        },
+        livingSituation: {
+            typeOfResidence: "",
+            availableSpace: ""
         }
     });
 
-    const handleFieldChange = (field, path, name, value) => {
+    const handleFieldChange = (field, name, value) => {
         setFormData(prevForm => {
             return {
                 ...prevForm,
                 [field]: {
                     ...prevForm[field],
-                    [path]: {
-                        ...prevForm[field][path],
-                        [name]: value
-                    }
+                    [name]: value
                 }
             }
         });
+    }
+
+    const handleOnChange = (branch, path, event) => {
+        const {name, value} = event.target;
+        const fieldName = (path && `${path}_${name}`) || name;
+        handleFieldChange(branch, fieldName, value);
     }
 
     const handleOnSubmit = event => {
@@ -47,7 +49,8 @@ export default function UserProfile({ token }) {
 
     return (<div>
         <form onSubmit={handleOnSubmit}>
-            <UserBasicInformation onFieldChange={handleFieldChange} />
+            <UserBasicInformation handler={handleOnChange} />
+            <LivingSituation handler={handleOnChange} />
             <button>Submit</button>
         </form>
     </div>)

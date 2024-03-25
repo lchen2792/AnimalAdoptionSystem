@@ -26,6 +26,7 @@ public class UserProfile {
     private Personality personality;
     private List<Binary> identifications;
     private String customerId;
+    private String authEmail;
     @Version
     private Long version;
     @CreatedDate
