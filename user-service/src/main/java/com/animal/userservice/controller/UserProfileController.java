@@ -1,6 +1,5 @@
 package com.animal.userservice.controller;
 
-import com.animal.common.constant.Constants;
 import com.animal.userservice.controller.model.CreateUserProfileRequest;
 import com.animal.userservice.controller.model.UpdateUserProfileRequest;
 import com.animal.userservice.controller.model.ValidatePaymentMethodRequest;
@@ -16,15 +15,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @RestController
@@ -37,13 +33,11 @@ public class UserProfileController {
     private transient PaymentProcessingService paymentProcessingService;
 
     @GetMapping("/{userProfileId}")
-    @PreAuthorize("permitAll()")
     public UserProfile findUserProfileById(@PathVariable String userProfileId) {
         return userProfileService.findUserProfileById(userProfileId);
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public Page<UserProfile> findUserProfiles(
             @PageableDefault(
                     sort = {"basicInformation.name.firstName", "basicInformation.name.lastName"},
@@ -53,7 +47,6 @@ public class UserProfileController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("permitAll()")
     public String createUserProfile(@RequestPart CreateUserProfileRequest request, @RequestPart List<MultipartFile> files){
         UserProfile userProfile = UserProfile.builder().build();
         BeanUtils.copyProperties(request, userProfile);
@@ -71,7 +64,6 @@ public class UserProfileController {
     }
 
     @PutMapping
-    @PreAuthorize("permitAll()")
     public String updateUserProfile(@RequestBody UpdateUserProfileRequest request){
         UserProfile curUserProfile = userProfileService.findUserProfileById(request.getUserProfileId());
         BeanUtils.copyProperties(request, curUserProfile);
@@ -79,7 +71,6 @@ public class UserProfileController {
     }
 
     @PutMapping("/{userProfileId}/id")
-    @PreAuthorize("permitAll()")
     public String updateIdentifications(@PathVariable String userProfileId, @RequestPart List<MultipartFile> files){
         UserProfile curUserProfile = userProfileService.findUserProfileById(userProfileId);
         List<Binary> identifications = files.stream().map(file -> {
@@ -94,7 +85,6 @@ public class UserProfileController {
     }
 
     @PutMapping("/{userProfileId}/payment")
-    @PreAuthorize("hasRole('CUSTOMER')")
     public String updatePaymentDetail(
             @PathVariable String userProfileId,
             @RequestBody ValidatePaymentMethodRequest paymentDetail) {
@@ -110,7 +100,6 @@ public class UserProfileController {
     }
 
     @DeleteMapping("/{userProfileId}")
-    @PreAuthorize("permitAll()")
     public String deleteUserProfile(
             @PathVariable String userProfileId) {
 

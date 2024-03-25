@@ -5,8 +5,6 @@ import com.animal.userservice.exception.MatchingException;
 import com.animal.userservice.service.AnimalProfileService;
 import com.animal.userservice.service.GeminiService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -20,7 +18,6 @@ public class MatchController {
     @Autowired
     private transient AnimalProfileService animalProfileService;
 
-    @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping("/animals")
     public Map<String, Number> match(
             @RequestBody MatchAnimalRequest request){

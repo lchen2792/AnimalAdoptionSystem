@@ -5,6 +5,7 @@ import com.animal.authservice.dto.RegistrationRequest;
 import com.animal.authservice.exception.DuplicateUserIdentifierException;
 import com.animal.authservice.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -26,7 +27,7 @@ public class AuthenticationController {
         }
     }
 
-    @GetMapping("/auth")
+    @PostMapping(value = "/auth")
     public ResponseEntity<String> authenticate(@RequestBody LoginRequest request) {
         try {
             String authenticate = authenticationService.authenticate(request);
