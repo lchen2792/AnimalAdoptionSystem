@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import UserBasicInformation from "./UserBasicInformation";
 import LivingSituation from "./LivingSituation";
 import FamilySituation from "./FamilySituation";
+import Experience from "./Experience";
+import Knowledge from "./Knowledge";
+import Personality from "./Personality";
 
 
 export default function UserProfile({ token }) {
-
     const [formData, setFormData] = useState({
         basicInformation: {
             name_firstName: "",
@@ -22,6 +24,30 @@ export default function UserProfile({ token }) {
         livingSituation: {
             typeOfResidence: "",
             availableSpace: ""
+        },
+        familySituation: {
+            numberOfAdults: "",
+            numberOfChildren: "",
+            pets: []
+        },
+        experience: {
+            withAdoptingSpecies: "",
+            withAdoptingBreed: "",
+            withAnimalAdoption: ""
+        },
+        Knowledge: {
+            ofAdoptingSpecies: "",
+            ofAdoptingBreed: "",
+            ofAnimalAdoption: ""
+        },
+        personality: {
+            sociability: "",
+            activity: "",
+            stability: "",
+            patience: "",
+            motivation: "",
+            adaptability: "",
+            communication: ""
         }
     });
 
@@ -50,9 +76,12 @@ export default function UserProfile({ token }) {
 
     return (<div>
         <form onSubmit={handleOnSubmit}>
-            <UserBasicInformation handler={handleOnChange} />
-            <LivingSituation handler={handleOnChange} />
-            <FamilySituation handler={handleOnChange} />
+            <UserBasicInformation handleOnChange={handleOnChange} />
+            <LivingSituation handleOnChange={handleOnChange} />
+            <FamilySituation handleOnChange={handleOnChange} />
+            <Experience handleOnChange={handleOnChange} />
+            <Knowledge handleOnChange={handleOnChange} />
+            <Personality handleOnChange={handleOnChange} />
             <button>Submit</button>
         </form>
     </div>)

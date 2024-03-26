@@ -2,25 +2,52 @@ import React, { useEffect, useState } from "react";
 import Pet from "./Pet";
 
 
-export default function FamilySituation({handler}){
+export default function FamilySituation({handleOnChange}){
     const branch = "familySituation";
     const [petList, setPetList] = useState([]);
     const handlePetAddition = () => {
-        setPetList(prev => [...prev, new Date().getTime()]);
-    }
-    const handlePetRemoval = petId => {
-        setPetList(prev => prev.filter(p => p !== petId));
+        const petId = new Date().getTime();
+        const newPet = {
+            petId: petId,
+            species: "",
+            breed: "",
+            age: ""
+        }
+        setPetList(prev => [...prev, newPet]);
+    };
+
+    const handlePetChange = (petId, event) => {
+        const {name, value} = event.target;
+        
+        setPetList(prev => {
+            const idx = prev.findIndex(pet=>pet.petId === petId);
+            const newPetList = [...prev];
+            newPetList[idx] = {
+                ...prev[idx],
+                [name]:value
+            };
+            return newPetList;
+        });
     }
 
-    const petInputList = petList.map(petId => {
+    const handlePetRemoval = petId => {
+        setPetList(prev => prev.filter(p => p.petId !== petId));
+    };
+
+    const petInputList = petList.map(pet => {
         return <Pet 
-                    key={petId} 
-                    petId={petId}
+                    key={pet.petId} 
+                    petId={pet.petId}
                     branch={branch} 
-                    handlePetChange={handler} 
+                    handlePetChange={handlePetChange} 
                     handlePetRemoval={handlePetRemoval}
                 />;
-    })
+    });
+
+    useEffect(()=> {
+        console.log(petList);
+        handleOnChange(branch, "", {target: {name: "pets", value: petList}});
+    }, [petList]);
 
     return (
         <div className="user-family-situation">
@@ -30,7 +57,7 @@ export default function FamilySituation({handler}){
                 name="numberOfAdults"
                 pattern="[0-9]{1,2}"
                 placeholder="Number of Adults"
-                onChange={event => handler(branch, "", event)}
+                onChange={event => handleOnChange(branch, "", event)}
             />
             <br />
             <input 
@@ -38,7 +65,7 @@ export default function FamilySituation({handler}){
                 name="numberOfChildren"
                 pattern="[0-9]{1,2}"
                 placeholder="Number of children"
-                onChange={event => handler(branch, "", event)}
+                onChange={event => handleOnChange(branch, "", event)}
             />
             <br />
             Add info about the pets you own         
@@ -47,5 +74,5 @@ export default function FamilySituation({handler}){
                 {petInputList}
             </div>            
         </div>
-    )
+    );
 }

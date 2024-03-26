@@ -1,13 +1,13 @@
 import React from "react";
 
-export default function Level({handleLevelChange, branch}){
+export default function Level({purpose, name, handleLevelChange, branch}){
     return (
         <div>
-            <span>Available space</span>
+            <span>{purpose}</span>
             <input
                 id="level-1"
                 type="radio"
-                name="availableSpace"
+                name={name}
                 value="1"
                 onChange={event => handleLevelChange(branch, "", event)}
             />
@@ -15,7 +15,7 @@ export default function Level({handleLevelChange, branch}){
             <input
                 id="level-2"
                 type="radio"
-                name="availableSpace"
+                name={name}
                 value="2"
                 onChange={event => handleLevelChange(branch, "", event)}
             />
@@ -23,7 +23,7 @@ export default function Level({handleLevelChange, branch}){
             <input
                 id="level-3"
                 type="radio"
-                name="availableSpace"
+                name={name}
                 value="3"
                 onChange={event => handleLevelChange(branch, "", event)}
             />
@@ -31,7 +31,7 @@ export default function Level({handleLevelChange, branch}){
             <input
                 id="level-4"
                 type="radio"
-                name="availableSpace"
+                name={name}
                 value="4"
                 onChange={event => handleLevelChange(branch, "", event)}
             />
@@ -39,7 +39,7 @@ export default function Level({handleLevelChange, branch}){
             <input
                 id="level-5"
                 type="radio"
-                name="availableSpace"
+                name={name}
                 value="5"
                 onChange={event => handleLevelChange(branch, "", event)}
             />
@@ -47,7 +47,7 @@ export default function Level({handleLevelChange, branch}){
             <input
                 id="level-6"
                 type="radio"
-                name="availableSpace"
+                name={name}
                 value="6"
                 onChange={event => handleLevelChange(branch, "", event)}
             />
@@ -55,7 +55,7 @@ export default function Level({handleLevelChange, branch}){
             <input
                 id="level-7"
                 type="radio"
-                name="availableSpace"
+                name={name}
                 value="7"
                 onChange={event => handleLevelChange(branch, "", event)}
             />

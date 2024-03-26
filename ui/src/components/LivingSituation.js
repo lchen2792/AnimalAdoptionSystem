@@ -2,12 +2,12 @@ import React from "react";
 import Level from "./Level";
 
 
-export default function LivingSituation({handler}){
+export default function LivingSituation({handleOnChange}){
     const branch = "livingSituation";
     return (
         <div>
             <h3>Living Situation</h3>
-            <select name="typeOfResidence" onChange={event => handler(branch, "", event)}>
+            <select name="typeOfResidence" onChange={event => handleOnChange(branch, "", event)}>
                 <option value="">Choose residence type</option>
                 <option value="apartment">Apartment</option>
                 <option value="townhouse">Townhouse</option>
@@ -16,7 +16,7 @@ export default function LivingSituation({handler}){
                 <option value="other">Other</option>
             </select>
             <br />
-            <Level handleLevelChange={handler} branch={branch}/>
+            <Level purpose="Available Space" name="availableSpace" handleLevelChange={handleOnChange} branch={branch}/>
         </div>
     )
 }
