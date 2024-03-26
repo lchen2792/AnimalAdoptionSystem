@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Level({handleLevelChange,branch}){
+export default function Level({handleLevelChange, branch}){
     return (
         <div>
             <span>Available space</span>

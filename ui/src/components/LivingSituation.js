@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Level from "./Level";
 
 
@@ -8,12 +8,12 @@ export default function LivingSituation({handler}){
         <div>
             <h3>Living Situation</h3>
             <select name="typeOfResidence" onChange={event => handler(branch, "", event)}>
-                <option defaultChecked>Choose residence type</option>
-                <option>Apartment</option>
-                <option>Townhouse</option>
-                <option>House</option>
-                <option>Ranch</option>
-                <option>Other</option>
+                <option value="">Choose residence type</option>
+                <option value="apartment">Apartment</option>
+                <option value="townhouse">Townhouse</option>
+                <option value="house">House</option>
+                <option value="ranch">Ranch</option>
+                <option value="other">Other</option>
             </select>
             <br />
             <Level handleLevelChange={handler} branch={branch}/>

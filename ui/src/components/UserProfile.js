@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import UserBasicInformation from "./UserBasicInformation";
 import LivingSituation from "./LivingSituation";
+import FamilySituation from "./FamilySituation";
 
 
 export default function UserProfile({ token }) {
@@ -51,6 +52,7 @@ export default function UserProfile({ token }) {
         <form onSubmit={handleOnSubmit}>
             <UserBasicInformation handler={handleOnChange} />
             <LivingSituation handler={handleOnChange} />
+            <FamilySituation handler={handleOnChange} />
             <button>Submit</button>
         </form>
     </div>)
