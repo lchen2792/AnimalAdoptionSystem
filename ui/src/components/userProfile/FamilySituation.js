@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Pet from "./Pet";
 
 
-export default function FamilySituation({handleOnChange}){
+export default function FamilySituation({data, handleOnChange}){
     const branch = "familySituation";
     const [petList, setPetList] = useState([]);
     const handlePetAddition = () => {
@@ -35,9 +35,11 @@ export default function FamilySituation({handleOnChange}){
     };
 
     const petInputList = petList.map(pet => {
+        const curPetData = data.pets.filter(p=>p.petId === pet.petId);
         return <Pet 
-                    key={pet.petId} 
+                    key={pet.petId}
                     petId={pet.petId}
+                    data={curPetData}
                     branch={branch} 
                     handlePetChange={handlePetChange} 
                     handlePetRemoval={handlePetRemoval}
@@ -45,7 +47,6 @@ export default function FamilySituation({handleOnChange}){
     });
 
     useEffect(()=> {
-        console.log(petList);
         handleOnChange(branch, "", {target: {name: "pets", value: petList}});
     }, [petList]);
 
@@ -55,6 +56,7 @@ export default function FamilySituation({handleOnChange}){
             <input 
                 type="text"
                 name="numberOfAdults"
+                value={data.numberOfAdults}
                 pattern="[0-9]{1,2}"
                 placeholder="Number of Adults"
                 onChange={event => handleOnChange(branch, "", event)}
@@ -63,6 +65,7 @@ export default function FamilySituation({handleOnChange}){
             <input 
                 type="text"
                 name="numberOfChildren"
+                value={data.numberOfChildren}
                 pattern="[0-9]{1,2}"
                 placeholder="Number of children"
                 onChange={event => handleOnChange(branch, "", event)}

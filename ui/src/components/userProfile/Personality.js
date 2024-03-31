@@ -1,7 +1,7 @@
 import React from "react";
-import Level from "./Level";
+import Level from "../Level";
 
-export default function Personality({handleOnChange}){
+export default function Personality({data, handleOnChange}){
     const branch = "personality";
     const personalityList = [
         "Sociability",
@@ -13,11 +13,13 @@ export default function Personality({handleOnChange}){
         "Communication"
     ];
 
-    const personalityInputs = personalityList.map((p, index) => {
+    const personalityInputs = personalityList.map(p => {
+        const lowerCasedP = p.toLowerCase();
         return <Level 
-                    key={index}
+                    key={lowerCasedP}
                     purpose={p} 
-                    name={p.toLowerCase()} 
+                    name={lowerCasedP}
+                    data={data[lowerCasedP]}
                     handleLevelChange={handleOnChange} 
                     branch={branch}
                 />; 

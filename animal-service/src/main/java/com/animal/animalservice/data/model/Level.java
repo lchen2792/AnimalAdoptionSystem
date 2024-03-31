@@ -14,7 +14,7 @@ public enum Level implements Serializable {
     EXTRA_HIGH(6),
     EXTREME_HIGH(7);
 
-    private int value;
+    private final int value;
 
     Level(int v) {
         this.value = v;
