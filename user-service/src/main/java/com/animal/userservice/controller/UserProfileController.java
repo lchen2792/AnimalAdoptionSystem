@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,11 +44,11 @@ public class UserProfileController {
     @GetMapping("/me")
     public ResponseEntity<UserProfile> findUserProfileByAuthToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken){
         Optional<Claims> optionalClaims = jwtService.resolveToken(jwtToken);
-        if (optionalClaims.isEmpty()) {
-            return ResponseEntity.status(401).build();
+        if (optionalClaims.isEmpty() || optionalClaims.get().get("subject") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        String authEmail = optionalClaims.get().getSubject();
+        String authEmail = optionalClaims.get().get("subject").toString();
 
         return userProfileService
                 .findUserProfileByAuthEmail(authEmail)
@@ -112,7 +113,7 @@ public class UserProfileController {
                 .thenApply(customerId -> {
                     curUserProfile.setCustomerId(customerId);
                     userProfileService.updateUserProfile(curUserProfile);
-                    return "payment validated and updated";
+                    return customerId;
                 })
                 .join();
     }

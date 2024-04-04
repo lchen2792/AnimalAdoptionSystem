@@ -15,6 +15,7 @@ import com.animal.applicationservice.exception.ApplicationLimitException;
 import com.animal.applicationservice.query.model.FetchApplicationByIdQuery;
 import com.animal.applicationservice.query.model.FetchApplicationCountByUserProfileIdQuery;
 import com.animal.applicationservice.query.model.FetchApplicationStatusSummaryQuery;
+import jakarta.ws.rs.Produces;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.extensions.reactor.commandhandling.gateway.ReactorCommandGateway;
 import org.axonframework.extensions.reactor.queryhandling.gateway.ReactorQueryGateway;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
@@ -144,7 +146,7 @@ public class ApplicationController {
                 );
     }
 
-    @GetMapping(value = "/review/notification")
+    @GetMapping(value = "/review/notification", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<Notification>> notifyApplicationReview(){
         Flux<ServerSentEvent<Notification>> heartBeats = Flux
                 .interval(Duration.of(20, ChronoUnit.SECONDS))

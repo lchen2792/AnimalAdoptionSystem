@@ -23,7 +23,7 @@ public class UserProfileService {
     }
 
     public Optional<UserProfile> findUserProfileByAuthEmail(String authEmail) {
-        return userProfileRepository.findUserProfileByAuthEmail(authEmail);
+        return Optional.ofNullable(authEmail).flatMap(email -> userProfileRepository.findUserProfileByAuthEmail(email));
     }
 
     public Page<UserProfile> findUserProfiles(Pageable pageable){
