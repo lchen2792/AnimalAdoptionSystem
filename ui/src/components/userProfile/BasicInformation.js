@@ -32,7 +32,7 @@ export default function UserBasicInformation({data, handleOnChange}){
         <input 
             type="text"
             name="addressLine1"
-            value={data.adress_addressLine1}
+            value={data.address_addressLine1}
             placeholder="Address Line 1"
             onChange={event => handleOnChange(branch, "address", event)}
         />
@@ -40,7 +40,7 @@ export default function UserBasicInformation({data, handleOnChange}){
         <input 
             type="text"
             name="addressLine2"
-            value={data.adress_addressLine2}
+            value={data.address_addressLine2}
             placeholder="Address Line 2"
             onChange={event => handleOnChange(branch, "address", event)}
         />
@@ -72,8 +72,8 @@ export default function UserBasicInformation({data, handleOnChange}){
             type="tel"
             name="phone"
             value={data.contact_phone}
-            placeholder="Phone Number 123-456-7890"
-            pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+            placeholder="Phone Number 1234567890"
+            pattern="[0-9]{10}"
             onChange={event => handleOnChange(branch, "contact", event)}
         />
         <input 

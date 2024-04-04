@@ -23,15 +23,33 @@ export function unflatten(obj) {
 }
 
 export function flatten(obj) {
-    if (Array.isArray(obj)) {
+    if (!obj) {
+        return "";
+    }
+    else if (Array.isArray(obj)) {
         return obj.map(ele=>flatten(ele));
-    } else if (typeof obj === 'object') {
-        const res = {};
+    } else if (obj && typeof obj === 'object') {
+        let res = {};
         for(const key in obj) {
-            
+            const flattenChild = flatten(obj[key]);
+            res = {...res, ...helper(key, flattenChild)};
         }
         return res;
     } else {
         return obj;
+    }
+}
+
+function helper(prefix, obj) {
+    if (Array.isArray(obj)) {
+        return {[prefix]: obj};
+    } else if (obj && typeof obj === 'object') {
+        const res = {};
+        for(const key in obj) {
+            res[`${prefix}_${key}`] = obj[key];
+        }
+        return res;
+    } else {
+        return {[prefix]: obj};
     }
 }

@@ -9,7 +9,7 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import UserProfile from './components/userProfile/UserProfile';
 import Login from './components/Login';
-import Animals from './components/animals/AnimalProfile';
+import Animals from './components/animals/Animals';
 import AnimalProfile from './components/animals/AnimalProfile';
 import Application from './components/application/Application';
 
@@ -22,9 +22,9 @@ export default function App() {
         <Navbar navigate={navigate} login={login} setLogin={setLogin} />
         <Routes>
           <Route path='/' element={<Home />} />
-          <Route path='/user-profile' element={<UserProfile navigate={navigate} />} />
-          <Route path='/application/:animalId' element={<Application login={login} navigate={navigate} />} />
-          <Route path='/animals' element={<Animals />} />
+          <Route exact path='/user-profile' element={<UserProfile login={login} setLogin={setLogin} navigate={navigate} />} />
+          <Route path='/application/:animalId' element={<Application login={login} setLogin={setLogin} navigate={navigate} />} />
+          <Route exact path='/animals' element={<Animals />} />
           <Route path='/animals/:id' element={<AnimalProfile login={login} navigate={navigate} />} />
           <Route path='/login' element={<Login navigate={navigate} login={login} setLogin={setLogin} />} />
         </Routes>

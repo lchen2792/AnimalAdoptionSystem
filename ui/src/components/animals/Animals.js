@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import AnimalCard from "./AnimalCard";
 
 const query =
-    `
+`
 query($request: FindAnimalProfilesByCriteriaRequest!) {
     findAnimalProfilesByCriteria(request: $request) {
         animalProfileId,
@@ -33,9 +33,7 @@ export default function Animals() {
                     body: JSON.stringify({
                         query: query,
                         variables: {
-                            request: {
-
-                            }
+                            request: {}
                         }
                     })
                 }
@@ -43,10 +41,18 @@ export default function Animals() {
             if (!response.ok) {
                 throw new Error(response.statusText);
             }
+
             const animalData = await response.json();
-            setAnimalList(animalData);
+
+            if (animalData["errors"]) {
+                throw new Error(animalData["errors"]);
+            }
+
+            setAnimalList(animalData.data.findAnimalProfilesByCriteria);
         })();
     }, []);
+
+    console.log(animalList);
 
     const animalCards = animalList.map(a => <AnimalCard key={a.animalProfileId} {...a} />);
 

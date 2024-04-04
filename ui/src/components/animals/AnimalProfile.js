@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import Level from "../Level";
 
 const query =
     `query($id: ID!) {
@@ -40,32 +39,37 @@ export default function AnimalProfile({login, navigate}) {
     const { id } = useParams();
     const [animalProfile, setAnimalProfile] = useState("");
 
-    // useEffect(() => {
-    //     (async () => {
-    //         const response = await fetch(
-    //             "http://localhost:9000/animal-service/graphql",
-    //             {
-    //                 method: 'POST',
-    //                 headers: {
-    //                     'Content-Type': 'application/json'
-    //                 },
-    //                 body: JSON.stringify({
-    //                     query: query,
-    //                     variables: {
-    //                         id: id
-    //                     }
-    //                 })
-    //             }
-    //         );
+    useEffect(() => {
+        (async () => {
+            const response = await fetch(
+                "http://localhost:9000/animal-service/graphql",
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        variables: {
+                            id: id
+                        }
+                    })
+                }
+            );
 
-    //         if (!response.ok) {
-    //             throw new Error(response.statusText);
-    //         }
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
 
-    //         const data = await response.json();
-    //         setAnimalProfile(data);
-    //     })();
-    // }, []);
+            const data = await response.json();
+
+            if (data["errors"]) {
+                throw new Error(data["errors"]);
+            }
+
+            setAnimalProfile(data.data.findAnimalProfileById);
+        })();
+    }, []);
 
     const transformObjectAsList = (obj, formatter) => Object.entries(obj).map(([k, v], i) => {
         return <li key={i}>{formatter(k, v)}</li>;

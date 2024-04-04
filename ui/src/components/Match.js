@@ -1,31 +1,89 @@
 import React, { useState, useEffect } from "react";
 import AnimalCard from "../components/animals/AnimalCard";
-import { wait } from "@testing-library/user-event/dist/utils";
 
-export default function Match({ userProfileId }) {
+const query =
+    `
+query($id: ID!) {
+    findAnimalProfileById(animalProfileId: $id) {
+        basicInformation {
+            species,
+            breed,
+            age,
+            gender,
+            size,
+            neutered
+        }
+    }
+}
+`;
+
+export default function Match({ login, setLogin, userProfile, navigate }) {
     const [animalCards, setAnimalCards] = useState([]);
-
-    console.log(animalCards);
 
     useEffect(() => {
         (async () => {
-            // const response = await fetch();
-            // if (!response.ok) {
-            //     console.log(response.statusText);
-            // }
-            //const matchMap = await response.json();
-            const matchMap = {"a": 0.8, "b": 0.6};
-            const matchList = Object.entries(matchMap).sort((e1, e2) => e2[1] - e1[1]).map(e => e[0]);
+            const response = await fetch(
+                "http://localhost:9000/user-service/match/animals",
+                {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + login,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userProfileForMatch: userProfile,
+                        /** @todo Add support for match based on user input */
+                        request: {}
+                    })
+                }
+            );
+            if (!response.ok) {
+                if (response.status === 401) {
+                    localStorage.removeItem("token");
+                    setLogin(null);
+                    navigate("/login");
+                } else {
+                    throw new Error(response.statusText);
+                }
+            }
 
-            const matchPromises = matchList
-                .map(match => {
-                    // const response = await fetch();
-                    //const animalProfile = await response.json();
+            const matchMap = await response.json();
+            const matchIdList = Object.entries(matchMap).sort((e1, e2) => e2[1] - e1[1]).map(e => e[0]);
+
+            const matchPromises = matchIdList
+                .map(async matchId => {
+                    const response = await fetch(
+                        "http://localhost:9000/animal-service/graphql",
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                query: query,
+                                variables: {
+                                    id: matchId
+                                }
+                            })
+                        }
+                    );
+
+                    if (!response.ok) {
+                        throw new Error(response.statusText);
+                    }
+
+                    const data = await response.json();
+
+                    if (data["errors"]) {
+                        throw new Error(data["errors"]);
+                    }
+
+                    const animalProfile = data.data.findAnimalProfileById;
 
                     return <AnimalCard
-                        // key={animalProfile.animalProfileId}
-                        // animalProfileId={animalProfile.animalProfileId}
-                        // basicInformation={animalProfile.basicInformation}
+                        key={animalProfile.animalProfileId}
+                        animalProfileId={animalProfile.animalProfileId}
+                        basicInformation={animalProfile.basicInformation}
                     />
                 });
 

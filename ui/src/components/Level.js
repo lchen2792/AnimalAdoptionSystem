@@ -8,8 +8,8 @@ export default function Level({purpose, name, data, handleLevelChange, branch}){
                 id="level-1"
                 type="radio"
                 name={name}
-                value={1}
-                checked={data === 1}
+                value="EXTREME_LOW"
+                checked={data === "EXTREME_LOW"}
                 onChange={event => handleLevelChange(branch, "", event)}
             />
             <label htmlFor="level-1">Extreme low</label>
@@ -17,8 +17,8 @@ export default function Level({purpose, name, data, handleLevelChange, branch}){
                 id="level-2"
                 type="radio"
                 name={name}
-                value={2}
-                checked={data === 2}
+                value="EXTRA_LOW"
+                checked={data === "EXTRA_LOW"}
                 onChange={event => handleLevelChange(branch, "", event)}
             />
             <label htmlFor="level-2">Extra low</label>
@@ -26,8 +26,8 @@ export default function Level({purpose, name, data, handleLevelChange, branch}){
                 id="level-3"
                 type="radio"
                 name={name}
-                value={3}
-                checked={data === 3}
+                value="LOW"
+                checked={data === "LOW"}
                 onChange={event => handleLevelChange(branch, "", event)}
             />
             <label htmlFor="level-3">Low</label>
@@ -35,8 +35,8 @@ export default function Level({purpose, name, data, handleLevelChange, branch}){
                 id="level-4"
                 type="radio"
                 name={name}
-                value={4}
-                checked={data === 4}
+                value="MEDIUM"
+                checked={data === "MEDIUM"}
                 onChange={event => handleLevelChange(branch, "", event)}
             />
             <label htmlFor="level-4">Medium</label>
@@ -44,8 +44,8 @@ export default function Level({purpose, name, data, handleLevelChange, branch}){
                 id="level-5"
                 type="radio"
                 name={name}
-                value={5}
-                checked={data === 5}
+                value="HIGH"
+                checked={data === "HIGH"}
                 onChange={event => handleLevelChange(branch, "", event)}
             />
             <label htmlFor="level-5">High</label>
@@ -53,8 +53,8 @@ export default function Level({purpose, name, data, handleLevelChange, branch}){
                 id="level-6"
                 type="radio"
                 name={name}
-                value={6}
-                checked={data === 6}
+                value="EXTRA_HIGH"
+                checked={data === "EXTRA_HIGH"}
                 onChange={event => handleLevelChange(branch, "", event)}
             />
             <label htmlFor="level-6">Extra high</label>
@@ -62,8 +62,8 @@ export default function Level({purpose, name, data, handleLevelChange, branch}){
                 id="level-7"
                 type="radio"
                 name={name}
-                value={7}
-                checked={data === 7}
+                value="EXTREME_HIGH"
+                checked={data === "EXTREME_HIGH"}
                 onChange={event => handleLevelChange(branch, "", event)}
             />
             <label htmlFor="level-7">Extreme high</label>

@@ -52,50 +52,56 @@ const userProfileTemplate = {
     }
 };
 
-const baseUrl = "localhost:9000/user-service";
+const baseUrl = "http://localhost:9000/user-service";
 
-export default function UserProfile({ navigate }) {
+export default function UserProfile({ login, setLogin, navigate }) {
     const [create, setCreate] = useState(false);
     const [section, setSection] = useState(0);
-    const token = localStorage.getItem("token");
+    const [formData, setFormData] = useState(userProfileTemplate);
+    const [userProfile, setUserProfile] = useState("");
 
     useEffect(() => {
-        // if (token) {
-        //     (async () => {
-        //         const response = await fetch(
-        //             `${baseUrl}/user-profiles/me`,
-        //             {
-        //                 method: "GET",
-        //                 headers: {
-        //                     "Authorization": "Bearer " + token,
-        //                     "Content-Type": "application/json"
-        //                 }
-        //             }
-        //         );
+        if (login) {
+            (async () => {
+                const response = await fetch(
+                    `${baseUrl}/user-profiles/me`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Authorization": "Bearer " + login,
+                            "Content-Type": "application/json"
+                        }
+                    }
+                );
 
-        //         if (!response.ok) {
-        //             if (response.status === 401) {
-        //                 //remove token
-        //                 localStorage.removeItem("token");
-        //                 navigate("/login");
-        //                 //refresh page
-        //             } else if (response.status === 404) {
-        //                 setCreate(true);
-        //             }
-        //         } else {
-        //             const userProfile = await response.json();
-        //             setFormData(userProfile);
-        //         }
-        //     })();
-        // } else {
-        //     navigate("/login");
-        // }
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem("token");
+                        setLogin(null);
+                        navigate("/login");
+                    } else if (response.status === 404) {
+                        setCreate(true);
+                    } else {
+                        throw new Error(response.statusText);
+                    }
+                } else {
+                    const userProfile = await response.json();
+                    const flattenedBasicInformation = flatten(userProfile.basicInformation);
+                    const flattenedFormData = {
+                        ...userProfile,
+                        basicInformation: flattenedBasicInformation
+                    }
+                    setFormData(flattenedFormData);
+                    setUserProfile(userProfile);
+                }
+            })();
+        } else {
+            navigate("/login");
+        }
     }, [])
 
-    const [formData, setFormData] = useState(userProfileTemplate);
-
-
     const handleFieldChange = (field, name, value) => {
+        console.log(name + " " + value);
         setFormData(prevForm => {
             return {
                 ...prevForm,
@@ -126,7 +132,7 @@ export default function UserProfile({ navigate }) {
             {
                 method: "POST",
                 headers: {
-                    "Authorization": "Bearer " + token,
+                    "Authorization": "Bearer " + login,
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(unflattenedFormData)
@@ -134,7 +140,13 @@ export default function UserProfile({ navigate }) {
         );
 
         if (!response.ok) {
-            throw new Error(response.statusText);
+            if (response.status === 401) {
+                localStorage.removeItem("token");
+                setLogin(null);
+                navigate("/login");
+            } else {
+                throw new Error(response.statusText);
+            }
         }
 
         const userProfileId = await response.text();
@@ -149,11 +161,18 @@ export default function UserProfile({ navigate }) {
             }
         );
 
-        if (!userProfileResponse.ok) {
-            throw new Error(response.statusText);
+        if (!response.ok) {
+            if (response.status === 401) {
+                localStorage.removeItem("token");
+                setLogin(null);
+                navigate("/login");
+            } else {
+                throw new Error(response.statusText);
+            }
         }
 
         const userProfile = await userProfileResponse.json();
+        setUserProfile(userProfile);
         const flattenedBasicInformation = flatten(userProfile.basicInformation);
         const flattenedFormData = {
             ...userProfile,
@@ -179,7 +198,12 @@ export default function UserProfile({ navigate }) {
             </form>
         }
         {section === 2 && (!create ?
-            <Match userProfileId={formData.userProfileId} />
+            <Match
+                login={login}
+                setLogin={setLogin}
+                userProfile={userProfile}
+                navigate={navigate}
+            />
             : "Please create your profile first")}
     </div>)
 }

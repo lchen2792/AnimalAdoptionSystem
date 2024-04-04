@@ -4,7 +4,8 @@ import Pet from "./Pet";
 
 export default function FamilySituation({data, handleOnChange}){
     const branch = "familySituation";
-    const [petList, setPetList] = useState([]);
+    console.log(data.pets);
+    const [petList, setPetList] = useState(data.pets);
     const handlePetAddition = () => {
         const petId = new Date().getTime();
         const newPet = {
@@ -35,11 +36,10 @@ export default function FamilySituation({data, handleOnChange}){
     };
 
     const petInputList = petList.map(pet => {
-        const curPetData = data.pets.filter(p=>p.petId === pet.petId);
         return <Pet 
                     key={pet.petId}
                     petId={pet.petId}
-                    data={curPetData}
+                    data={pet}
                     branch={branch} 
                     handlePetChange={handlePetChange} 
                     handlePetRemoval={handlePetRemoval}
@@ -47,6 +47,7 @@ export default function FamilySituation({data, handleOnChange}){
     });
 
     useEffect(()=> {
+        console.log("pets updaed");
         handleOnChange(branch, "", {target: {name: "pets", value: petList}});
     }, [petList]);
 
