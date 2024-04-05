@@ -5,6 +5,7 @@ const query =
     `
 query($id: ID!) {
     findAnimalProfileById(animalProfileId: $id) {
+        animalProfileId,
         basicInformation {
             species,
             breed,
@@ -22,6 +23,7 @@ export default function Match({ login, setLogin, userProfile, navigate }) {
 
     useEffect(() => {
         (async () => {
+            const {identifications, ...userProfileForMatch} = userProfile;
             const response = await fetch(
                 "http://localhost:9000/user-service/match/animals",
                 {
@@ -31,7 +33,7 @@ export default function Match({ login, setLogin, userProfile, navigate }) {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        userProfileForMatch: userProfile,
+                        userProfileForMatch: userProfileForMatch,
                         /** @todo Add support for match based on user input */
                         request: {}
                     })
@@ -73,6 +75,7 @@ export default function Match({ login, setLogin, userProfile, navigate }) {
                     }
 
                     const data = await response.json();
+                    console.log(data);
 
                     if (data["errors"]) {
                         throw new Error(data["errors"]);

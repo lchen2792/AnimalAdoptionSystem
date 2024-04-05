@@ -1,4 +1,4 @@
-package com.animal.gatewayservice;
+package com.animal.gatewayservice.config;
 
 import com.animal.gatewayservice.filter.RoleBasedAuthGatewayFilterFactory;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -16,23 +16,36 @@ public class GatewayConfig {
             RouteLocatorBuilder builder,
             RoleBasedAuthGatewayFilterFactory roleBasedAuthGatewayFilterFactory) {
         return builder.routes()
-                .route("user-service",
+                .route("user-service-api",
                         r -> r
-                                .path("/user-service/**")
+                                .path("/user-service/user-profiles/**", "/user-service/match/**")
                                 .filters(f -> f
                                         .rewritePath("/(?<prefix>.+)-service/(?<remaining>.*)", "/${remaining}")
                                         .filter(roleBasedAuthGatewayFilterFactory
                                                 .apply(new RoleBasedAuthGatewayFilterFactory
                                                         .Config(List.of("CUSTOMER", "EMPLOYEE", "ADMIN")))))
                                 .uri("lb://user-service"))
+                .route("user-service",
+                        r -> r
+                                .path("/user-service/**")
+                                .filters(f -> f
+                                        .rewritePath("/(?<prefix>.+)-service/(?<remaining>.*)", "/${remaining}")
+                                )
+                                .uri("lb://user-service"))
+                .route("application-service-api",
+                        r -> r
+                                .path("/application-service/applications/**")
+                                .filters(f -> f
+                                        .rewritePath("/(?<prefix>.+)-service/(?<remaining>.*)", "/${remaining}")
+                                        .filter(roleBasedAuthGatewayFilterFactory
+                                                .apply(new RoleBasedAuthGatewayFilterFactory
+                                                        .Config(List.of("CUSTOMER", "EMPLOYEE", "ADMIN")))))
+                                .uri("lb://application-service"))
                 .route("application-service",
                         r -> r
                                 .path("/application-service/**")
                                 .filters(f -> f
-                                        .rewritePath("/(?<prefix>.+)-service/(?<remaining>.*)", "/${remaining}")
-                                        .filter(roleBasedAuthGatewayFilterFactory
-                                        .apply(new RoleBasedAuthGatewayFilterFactory
-                                                .Config(List.of("CUSTOMER", "EMPLOYEE", "ADMIN")))))
+                                        .rewritePath("/(?<prefix>.+)-service/(?<remaining>.*)", "/${remaining}"))
                                 .uri("lb://application-service"))
                 .build();
     }

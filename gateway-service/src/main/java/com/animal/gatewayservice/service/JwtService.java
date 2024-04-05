@@ -29,8 +29,14 @@ public class JwtService {
                 .map(auths -> auths.get(0))
                 .filter(t -> t.startsWith("Bearer "))
                 .map(t -> t.substring(7))
-                .map(token -> Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody())
-                .filter(claims -> claims.getExpiration().after(new Date()));
+                .map(token -> {
+                    try {
+                        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+                    } catch (Exception e) {
+                        log.info("authentication failed: {}", e.getMessage());
+                        return null;
+                    }
+                });
     }
 
     public Boolean authorize(Claims credentials, List<String> roles){

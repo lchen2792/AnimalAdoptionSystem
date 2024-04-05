@@ -11,7 +11,7 @@ export default function Application({ setLogin, login, navigate }) {
         if (login) {
             (async () => {
                 const response = await fetch(
-                    "localhost:9000/user-service/user-profiles/me",
+                    "http://localhost:9000/user-service/user-profiles/me",
                     {
                         method: "GET",
                         headers: {

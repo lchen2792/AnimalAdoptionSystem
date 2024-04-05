@@ -9,6 +9,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.OrderedGatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -36,7 +37,10 @@ public class RoleBasedAuthGatewayFilterFactory extends AbstractGatewayFilterFact
             return jwtService
                     .authenticate(request)
                     .filter(claims -> jwtService.authorize(claims, config.getRoles()))
-                    .map(claims-> chain.filter(exchange))
+                    .map(claims -> {
+                        exchange.getRequest().mutate().header("Auth-Email", String.valueOf(claims.get("subject"))).build();
+                        return chain.filter(exchange);
+                    })
                     .orElseGet(() -> {
                         ServerHttpResponse response = exchange.getResponse();
                         response.setStatusCode(HttpStatus.UNAUTHORIZED);

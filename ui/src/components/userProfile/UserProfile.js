@@ -127,10 +127,11 @@ export default function UserProfile({ login, setLogin, navigate }) {
             basicInformation: unflattenedBasicInformation
         }
 
+        const method = create ? "POST" : "PUT";
         const response = await fetch(
-            baseUrl,
+            `${baseUrl}/user-profiles`,
             {
-                method: "POST",
+                method: method,
                 headers: {
                     "Authorization": "Bearer " + login,
                     "Content-Type": "application/json"
@@ -156,6 +157,7 @@ export default function UserProfile({ login, setLogin, navigate }) {
             {
                 method: "GET",
                 headers: {
+                    "Authorization": "Bearer " + login,
                     "Content-Type": "application/json"
                 }
             }

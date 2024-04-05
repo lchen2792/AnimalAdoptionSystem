@@ -42,14 +42,7 @@ public class UserProfileController {
     private transient JwtService jwtService;
 
     @GetMapping("/me")
-    public ResponseEntity<UserProfile> findUserProfileByAuthToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken){
-        Optional<Claims> optionalClaims = jwtService.resolveToken(jwtToken);
-        if (optionalClaims.isEmpty() || optionalClaims.get().get("subject") == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        String authEmail = optionalClaims.get().get("subject").toString();
-
+    public ResponseEntity<UserProfile> findUserProfileByAuthToken(@RequestHeader("Auth-Email") String authEmail){
         return userProfileService
                 .findUserProfileByAuthEmail(authEmail)
                 .map(ResponseEntity::ok)

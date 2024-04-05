@@ -40,22 +40,22 @@ export default function Login({ navigate, login, setLogin }) {
 
         if (!response.ok) {
             if (response.status === 400) {
-                alert(response.statusText);
+                alert("Username or password not correct");
                 setFormData(prev => {
                     return {
                         ...formDataTemplate,
-                        isSignUp : prev.isSignUp
+                        isSignUp: prev.isSignUp
                     }
                 })
             } else {
                 throw new Error(response.statusText);
             }
+        } else {
+            const token = await response.text();
+            localStorage.setItem("token", token);
+            setLogin(token);
+            navigate("/");
         }
-
-        const token = await response.text();
-        localStorage.setItem("token", token);
-        setLogin(token);
-        navigate("/");
     }
 
     return (

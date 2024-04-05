@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class Pet {
+    private Long petId;
     private String species;
     private String breed;
     private Integer age;
