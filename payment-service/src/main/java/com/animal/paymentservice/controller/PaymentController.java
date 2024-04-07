@@ -21,11 +21,6 @@ public class PaymentController {
     @Value("${stripe.application-fee}")
     private Long applicationFee;
 
-    @GetMapping("/test")
-    public Mono<String> test(){
-        return Mono.just("test api");
-    }
-
     @PostMapping("/validate-payment-method")
     public Mono<ResponseEntity<String>> validate(@RequestBody @Validated Mono<ValidatePaymentMethodRequest> paymentDetail) {
         return paymentDetail
