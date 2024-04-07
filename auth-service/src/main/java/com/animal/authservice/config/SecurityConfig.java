@@ -32,7 +32,10 @@ public class SecurityConfig {
     private UserService userService;
     private static final String [] WHITE_LIST_URL = {
             "**/auth",
-            "**/registration/**"
+            "**/registration/**",
+            "**/v3/api-docs/**",
+            "**/swagger-ui.html/**",
+            "**/swagger-ui/**"
     };
 
     private String WHITE_LIST_ORIGIN = "http://localhost:3000";

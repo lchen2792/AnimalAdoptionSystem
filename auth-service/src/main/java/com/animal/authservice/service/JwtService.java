@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
+@Slf4j
 public class JwtService {
     @Value("${spring.security.token.life-time}")
     private Long tokenLifeTime;
@@ -40,6 +42,8 @@ public class JwtService {
      * @return token claims if extracted, parsed and validated
      */
     public Optional<Claims> resolveToken(HttpServletRequest request) {
+        log.info("processing request uri " + request.getRequestURI());
+
         return Optional
                 .ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION))
                 .filter(t -> t.startsWith(Constants.JWT_PREFIX))

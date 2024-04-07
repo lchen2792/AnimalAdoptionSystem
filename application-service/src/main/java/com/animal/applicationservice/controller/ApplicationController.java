@@ -15,7 +15,6 @@ import com.animal.applicationservice.exception.ApplicationLimitException;
 import com.animal.applicationservice.query.model.FetchApplicationByIdQuery;
 import com.animal.applicationservice.query.model.FetchApplicationCountByUserProfileIdQuery;
 import com.animal.applicationservice.query.model.FetchApplicationStatusSummaryQuery;
-import jakarta.ws.rs.Produces;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.extensions.reactor.commandhandling.gateway.ReactorCommandGateway;
 import org.axonframework.extensions.reactor.queryhandling.gateway.ReactorQueryGateway;

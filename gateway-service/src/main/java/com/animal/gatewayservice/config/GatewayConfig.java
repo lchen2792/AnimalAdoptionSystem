@@ -5,6 +5,7 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 
 import java.util.List;
 
@@ -24,14 +25,16 @@ public class GatewayConfig {
                                         .filter(roleBasedAuthGatewayFilterFactory
                                                 .apply(new RoleBasedAuthGatewayFilterFactory
                                                         .Config(List.of("CUSTOMER", "EMPLOYEE", "ADMIN")))))
-                                .uri("lb://user-service"))
+                                .uri("lb://user-service")
+                )
                 .route("user-service",
                         r -> r
                                 .path("/user-service/**")
                                 .filters(f -> f
                                         .rewritePath("/(?<prefix>.+)-service/(?<remaining>.*)", "/${remaining}")
                                 )
-                                .uri("lb://user-service"))
+                                .uri("lb://user-service")
+                )
                 .route("application-service-api",
                         r -> r
                                 .path("/application-service/applications/**")
@@ -46,7 +49,8 @@ public class GatewayConfig {
                                 .path("/application-service/**")
                                 .filters(f -> f
                                         .rewritePath("/(?<prefix>.+)-service/(?<remaining>.*)", "/${remaining}"))
-                                .uri("lb://application-service"))
+                                .uri("lb://application-service")
+                )
                 .build();
     }
 }
