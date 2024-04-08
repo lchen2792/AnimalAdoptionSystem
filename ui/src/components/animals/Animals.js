@@ -57,7 +57,7 @@ export default function Animals() {
     const animalCards = animalList.map(a => <AnimalCard key={a.animalProfileId} {...a} />);
 
     return (
-        <div>
+        <div className="animals-wrapper">
             {animalCards}
         </div>
     )

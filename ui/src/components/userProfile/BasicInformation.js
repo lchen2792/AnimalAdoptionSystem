@@ -7,6 +7,7 @@ export default function UserBasicInformation({data, handleOnChange}){
     return (
     <div className="user-basic-information">
         <h3>Basic Information</h3>
+        <label className="descriptor">First Name</label>
         <input 
             type="text"
             name="firstName"
@@ -14,6 +15,7 @@ export default function UserBasicInformation({data, handleOnChange}){
             placeholder="First Name"
             onChange={event => handleOnChange(branch, "name", event)}
         />
+        <label className="descriptor">Middle Name</label>
         <input 
             type="text"
             name="middleName"
@@ -21,6 +23,7 @@ export default function UserBasicInformation({data, handleOnChange}){
             placeholder="Middle Name"
             onChange={event => handleOnChange(branch, "name", event)}
         />
+        <label className="descriptor">Last Name</label>
         <input 
             type="text"
             name="lastName"
@@ -29,6 +32,7 @@ export default function UserBasicInformation({data, handleOnChange}){
             onChange={event => handleOnChange(branch, "name", event)}
         />
         <br/>
+        <label className="descriptor">Address Line 1</label>
         <input 
             type="text"
             name="addressLine1"
@@ -37,6 +41,7 @@ export default function UserBasicInformation({data, handleOnChange}){
             onChange={event => handleOnChange(branch, "address", event)}
         />
         <br/>
+        <label className="descriptor">Address Line 2</label>
         <input 
             type="text"
             name="addressLine2"
@@ -45,6 +50,7 @@ export default function UserBasicInformation({data, handleOnChange}){
             onChange={event => handleOnChange(branch, "address", event)}
         />
         <br/>
+        <label className="descriptor">City</label>
         <input 
             type="text"
             name="city"
@@ -52,6 +58,7 @@ export default function UserBasicInformation({data, handleOnChange}){
             placeholder="City"
             onChange={event => handleOnChange(branch, "address", event)}
         />
+        <label className="descriptor">State</label>
         <input 
             type="text"
             name="state"
@@ -59,6 +66,8 @@ export default function UserBasicInformation({data, handleOnChange}){
             placeholder="State"
             onChange={event => handleOnChange(branch, "address", event)}
         />
+        <br />
+        <label className="descriptor">Zip Code</label>
         <input 
             type="text"
             name="zipCode"
@@ -68,6 +77,7 @@ export default function UserBasicInformation({data, handleOnChange}){
             onChange={event => handleOnChange(branch, "address", event)}
         />
         <br />
+        <label className="descriptor">Phone</label>
         <input 
             type="tel"
             name="phone"
@@ -76,6 +86,8 @@ export default function UserBasicInformation({data, handleOnChange}){
             pattern="[0-9]{10}"
             onChange={event => handleOnChange(branch, "contact", event)}
         />
+        <br />
+        <label className="descriptor">Email</label>
         <input 
             type="email"
             name="email"

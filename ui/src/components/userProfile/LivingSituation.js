@@ -7,6 +7,7 @@ export default function LivingSituation({data, handleOnChange}){
     return (
         <div>
             <h3>Living Situation</h3>
+            <label className="descriptor">Residence Type</label>
             <select name="typeOfResidence" value={data.typeOfResidence} onChange={event => handleOnChange(branch, "", event)}>
                 <option value="">Choose residence type</option>
                 <option value="apartment">Apartment</option>

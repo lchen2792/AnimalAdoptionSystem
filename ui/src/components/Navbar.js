@@ -1,23 +1,22 @@
 import React from 'react';
+import "../css/Navbar.css";
 import { Link } from 'react-router-dom';
 
-export default function Navbar({navigate, login, setLogin}) {
-    
-    const handleLogout = ()=>{
+export default function Navbar({ navigate, login, setLogin }) {
+
+    const handleLogout = () => {
         localStorage.removeItem("token");
-        setLogin(prev=>!prev);
+        setLogin(prev => !prev);
         navigate("/");
     }
 
     return (<nav className='nav-bar'>
-        <ul>
-            <li className='nav-bar-home'><Link to="/">Home</Link></li>
-            <li className='nav-bar-user'><Link to="/user-profile">User</Link></li>
-            <li className='nav-bar-animal'><Link to="/animals">Animal</Link></li>
-            {login ?
-                <li className='nav-bar-logout' onClick={handleLogout}>Log out</li> :
-                <li className='nav-bar-login'><Link to="/login">Log in</Link></li>
-            }
-        </ul>
+        <div className='nav-bar-home'><Link to="/">Home</Link></div>
+        <div className='nav-bar-user'><Link to="/user-profile">User</Link></div>
+        <div className='nav-bar-animal'><Link to="/animals">Animal</Link></div>
+        {login ?
+            <div className='nav-bar-logout' onClick={handleLogout}>Log out</div> :
+            <div className='nav-bar-login'><Link to="/login">Log in</Link></div>
+        }
     </nav>);
 }

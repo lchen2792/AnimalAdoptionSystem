@@ -4,6 +4,7 @@ export default function Pet({petId, data, handlePetChange, handlePetRemoval}){
 
     return (
         <div>
+            <label className="descriptor">Species</label>
             <input 
                 type="text" 
                 name="species" 
@@ -11,6 +12,7 @@ export default function Pet({petId, data, handlePetChange, handlePetRemoval}){
                 placeholder="Species" 
                 onChange={event => handlePetChange(petId, event)}
             />
+            <label className="descriptor">Breed</label>
             <input 
                 type="text" 
                 name="breed" 
@@ -18,6 +20,7 @@ export default function Pet({petId, data, handlePetChange, handlePetRemoval}){
                 placeholder="Breed" 
                 onChange={event => handlePetChange(petId, event)}
             />
+            <label className="descriptor">Age</label>
             <input 
                 type="text" 
                 name="age" 
@@ -29,7 +32,7 @@ export default function Pet({petId, data, handlePetChange, handlePetRemoval}){
             <input 
                 type="button" 
                 name="removePet" 
-                value="-" 
+                value="Remove" 
                 onClick={() => handlePetRemoval(petId)} 
             />
         </div>

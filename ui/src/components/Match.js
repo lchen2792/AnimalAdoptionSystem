@@ -75,7 +75,6 @@ export default function Match({ login, setLogin, userProfile, navigate }) {
                     }
 
                     const data = await response.json();
-                    console.log(data);
 
                     if (data["errors"]) {
                         throw new Error(data["errors"]);
@@ -100,7 +99,7 @@ export default function Match({ login, setLogin, userProfile, navigate }) {
     }, []);
 
     return (
-        <div>
+        <div className="match-wrapper">
             {animalCards}
         </div>
     )

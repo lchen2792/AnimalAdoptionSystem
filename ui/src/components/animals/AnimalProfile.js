@@ -75,26 +75,32 @@ export default function AnimalProfile({login, navigate}) {
         return <li key={i}>{formatter(k, v)}</li>;
     })
 
-    const keyValueFormatter = (k, v) => `${k}: ${v}`;
+    const levelFormatter = (k, v) => {
+        k = k.charAt(0).toUpperCase() + k.slice(1);
+        v = v.toString();
+        v = v.charAt(0).toUpperCase() + v.slice(1).toLowerCase();
+        v = v.replace("_", " ");
+        return `${k}: ${v}`;
+    }
 
     const handleApply = async () => {
         navigate(`/application/${id}`);
     };
 
-    return (<div>
-        {login && <div onClick={handleApply}>Apply</div>}
+    return (<div className="animal-profile-wrapper">
+        {login && <div className="apply-btn" onClick={handleApply}>Apply</div>}
         {animalProfile && <div>
             <h3>Basic Information</h3>
             <ul>
-                {transformObjectAsList(animalProfile.basicInformation, keyValueFormatter)}
+                {transformObjectAsList(animalProfile.basicInformation, levelFormatter)}
             </ul>
             <h3>Temperament</h3>
             <ul>
-                {transformObjectAsList(animalProfile.temperament, keyValueFormatter)}
+                {transformObjectAsList(animalProfile.temperament, levelFormatter)}
             </ul>
             <h3>Care Requirements</h3>
             <ul>
-                {transformObjectAsList(animalProfile.careRequirements, keyValueFormatter)}
+                {transformObjectAsList(animalProfile.careRequirements, levelFormatter)}
             </ul>
         </div>
         }

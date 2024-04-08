@@ -3,7 +3,7 @@ import React from "react";
 export default function Level({purpose, name, data, handleLevelChange, branch}){
     return (
         <div>
-            <span>{purpose}</span>
+            <label className="descriptor">{purpose}</label>
             <input
                 id="level-1"
                 type="radio"
@@ -12,7 +12,7 @@ export default function Level({purpose, name, data, handleLevelChange, branch}){
                 checked={data === "EXTREME_LOW"}
                 onChange={event => handleLevelChange(branch, "", event)}
             />
-            <label htmlFor="level-1">Extreme low</label>
+            <label className="level-descriptor" htmlFor="level-1">Extr low</label>
             <input
                 id="level-2"
                 type="radio"
@@ -21,7 +21,7 @@ export default function Level({purpose, name, data, handleLevelChange, branch}){
                 checked={data === "EXTRA_LOW"}
                 onChange={event => handleLevelChange(branch, "", event)}
             />
-            <label htmlFor="level-2">Extra low</label>
+            <label className="level-descriptor" htmlFor="level-2">Extra low</label>
             <input
                 id="level-3"
                 type="radio"
@@ -30,7 +30,7 @@ export default function Level({purpose, name, data, handleLevelChange, branch}){
                 checked={data === "LOW"}
                 onChange={event => handleLevelChange(branch, "", event)}
             />
-            <label htmlFor="level-3">Low</label>
+            <label className="level-descriptor" htmlFor="level-3">Low</label>
             <input
                 id="level-4"
                 type="radio"
@@ -39,7 +39,7 @@ export default function Level({purpose, name, data, handleLevelChange, branch}){
                 checked={data === "MEDIUM"}
                 onChange={event => handleLevelChange(branch, "", event)}
             />
-            <label htmlFor="level-4">Medium</label>
+            <label className="level-descriptor" htmlFor="level-4">Medium</label>
             <input
                 id="level-5"
                 type="radio"
@@ -48,7 +48,7 @@ export default function Level({purpose, name, data, handleLevelChange, branch}){
                 checked={data === "HIGH"}
                 onChange={event => handleLevelChange(branch, "", event)}
             />
-            <label htmlFor="level-5">High</label>
+            <label className="level-descriptor" htmlFor="level-5">High</label>
             <input
                 id="level-6"
                 type="radio"
@@ -57,7 +57,7 @@ export default function Level({purpose, name, data, handleLevelChange, branch}){
                 checked={data === "EXTRA_HIGH"}
                 onChange={event => handleLevelChange(branch, "", event)}
             />
-            <label htmlFor="level-6">Extra high</label>
+            <label className="level-descriptor" htmlFor="level-6">Extra high</label>
             <input
                 id="level-7"
                 type="radio"
@@ -66,7 +66,7 @@ export default function Level({purpose, name, data, handleLevelChange, branch}){
                 checked={data === "EXTREME_HIGH"}
                 onChange={event => handleLevelChange(branch, "", event)}
             />
-            <label htmlFor="level-7">Extreme high</label>
+            <label className="level-descriptor" htmlFor="level-7">Extr high</label>
         </div>
     )
 }

@@ -62,6 +62,7 @@ export default function Login({ navigate, login, setLogin }) {
         <div className="login-wrapper">
             {login ? "You are logged in" :
                 <div>
+                    <div className="is-sign-up">
                     <input
                         type="checkbox"
                         id="isSignUp"
@@ -69,7 +70,8 @@ export default function Login({ navigate, login, setLogin }) {
                         name="isSignUp"
                         checked={formData.isSignUp}
                     />
-                    <label htmlFor="isSignUp">Create account</label>
+                    <label htmlFor="isSignUp">Doesn't have an account?</label>
+                    </div> 
                     <form onSubmit={handleSubmit}>
                         {formData.isSignUp &&
                             <input

@@ -47,13 +47,13 @@ export default function FamilySituation({data, handleOnChange}){
     });
 
     useEffect(()=> {
-        console.log("pets updaed");
         handleOnChange(branch, "", {target: {name: "pets", value: petList}});
     }, [petList]);
 
     return (
         <div className="user-family-situation">
             <h3>Family Situation</h3>
+            <label className="descriptor">No. of Adults</label>
             <input 
                 type="text"
                 name="numberOfAdults"
@@ -63,6 +63,7 @@ export default function FamilySituation({data, handleOnChange}){
                 onChange={event => handleOnChange(branch, "", event)}
             />
             <br />
+            <label className="descriptor">No. of Children</label>
             <input 
                 type="text"
                 name="numberOfChildren"
@@ -72,8 +73,8 @@ export default function FamilySituation({data, handleOnChange}){
                 onChange={event => handleOnChange(branch, "", event)}
             />
             <br />
-            Add info about the pets you own         
-            <input type="button" name="addPet" value="+" onClick={handlePetAddition} />
+            <label>Tell us about the pets you own</label>         
+            <input type="button" name="addPet" value="Add" onClick={handlePetAddition} />
             <div className="pet-info">
                 {petInputList}
             </div>            

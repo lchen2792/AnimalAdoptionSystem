@@ -183,10 +183,10 @@ export default function UserProfile({ login, setLogin, navigate }) {
         setFormData(flattenedFormData);
     }
 
-    return (<div>
+    return (<div className="user-profile-wrapper">
         <nav>
-            <span onClick={() => setSection(1)}>Create/Update Profile</span>
-            <span onClick={() => setSection(2)}>Find Animal Match</span>
+            <div onClick={() => setSection(1)}>Create/Update Profile</div>
+            <div onClick={() => setSection(2)}>Find Animal Match</div>
         </nav>
         {section === 1 &&
             <form onSubmit={handleOnSubmit}>

@@ -74,8 +74,8 @@ export default function Application({ setLogin, login, navigate }) {
         </div>)
         );
 
-    return (<div>
-        {login && userProfile && (userProfile.customerId
+    return (<div className="application-wrapper">
+        {login && userProfile && (!userProfile.customerId
             ? <button onClick={handleSubmit}>Submit application</button>
             : <PaymentMethod {...{
                 login: login,
