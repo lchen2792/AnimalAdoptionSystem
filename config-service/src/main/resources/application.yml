@@ -9,8 +9,6 @@ spring:
       server:
         git:
           uri: https://github.com/lchen2792/AnimalAdoptionSystemConfig.git
-          username: ${config.username}
-          password: ${config.password}
           default-label: main
           clone-on-start: true
 
