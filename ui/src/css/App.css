@@ -68,15 +68,35 @@
 }
 
 .match-wrapper, .animals-wrapper {
-    background-color: aliceblue;
+    background-color: rgba(7, 54, 7, 0.636);
     display: flex;
-    justify-content: space-around;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    text-wrap: nowrap;
+}
+
+.animal-card {
+    text-align: center;
+    position: relative;
+    width: 200px;
+    height: 200px;
+    color: white;
 }
 
 .animal-card-thumbnail {
     object-fit: cover;
     width: 100%;
     height: 100%;
+}
+
+.animal-card-info {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    background-color: rgba(169, 239, 216, 0.315);
 }
 
 .animal-profile-wrapper {
@@ -89,6 +109,16 @@
 .animal-profile-wrapper h3 {
     padding: 10px 0;
 }
+
+.animal-profile-detail-btn {
+    display: block;
+    width: 100%;
+}
+
+.animal-profile-detail-btn:hover {
+    background-color: grey;
+}
+
 
 .apply-btn {
     text-align: center;

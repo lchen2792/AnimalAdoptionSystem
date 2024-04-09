@@ -43,7 +43,7 @@ export default function PaymentMethod({ login, setLogin, userProfile, setUserPro
     }
 
     const handleOnChange = event => {
-        const [name, value] = event.target;
+        const {name, value} = event.target;
         setCard(prev => {
             return {
                 ...prev,
@@ -59,10 +59,12 @@ export default function PaymentMethod({ login, setLogin, userProfile, setUserPro
             <input type="text" name="cardholderName" onChange={handleOnChange} value={card.cardholderName} placeholder="Card holder name" />
             <label className="descriptor">Card Number</label>
             <input type="text" name="cardNumber" onChange={handleOnChange} value={card.cardNumber} placeholder="Card number" />
+            <br />
             <label className="descriptor">Valid thru Year</label>
             <input type="text" name="validThruYear" onChange={handleOnChange} value={card.validThruYear} placeholder="Valid thru year" />
             <label className="descriptor">Valid thru Month</label>
             <input type="text" name="validThruMonth" onChange={handleOnChange} value={card.validThruMonth} placeholder="Valid thru month" />
+            <br />
             <label className="descriptor">CVV</label>
             <input type="text" name="CVV" onChange={handleOnChange} value={card.CVV} placeholder="CVV" />
             <button>Submit</button>

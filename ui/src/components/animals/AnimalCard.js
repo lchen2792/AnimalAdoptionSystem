@@ -15,11 +15,11 @@ export default function AnimalCard({animalProfileId, basicInformation}){
                 src={imgSrc}
                 onError={triggerFallbackImgSrc}
             />
-            <div>Species: {basicInformation.species}</div>
-            <div>Breed: {basicInformation.breed}</div>
-            <div>Age: {basicInformation.age}</div>
-            <div>Gender: {basicInformation.gender}</div>
-            <Link to={`/animals/${animalProfileId}`}>View details</Link>
+            <div className="animal-card-info">
+                <div>{basicInformation.breed}</div>
+                <div>{basicInformation.age} year(s) old</div>
+                <Link className="animal-profile-detail-btn" to={`/animals/${animalProfileId}`}>View details</Link>
+            </div>
         </div>
     )
 }
