@@ -1,0 +1,226 @@
+services:
+  config-service:
+    container_name: config-service
+    build:
+      context: ./config-service
+      dockerfile: Dockerfile
+    ports:
+      - "8888:8888"
+    networks:
+      - animal
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://config-service:8888/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  discovery-service:
+    container_name: discovery-service
+    build:
+      context: ./discovery-service
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    depends_on:
+      config-service:
+        condition: service_healthy
+    networks:
+      - animal
+    environment:
+      CONFIG_SERVER_URL: http://config-service:8888
+      DISCOVERY_SERVER_URL: http://discovery-service:8761/eureka
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://discovery-service:8761/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  axon-server:
+    image: axoniq/axonserver
+    hostname: axon-server
+    ports:
+      - '8024:8024'
+      - '8124:8124'
+      - '8224:8224'
+    environment:
+      axoniq.axonserver.standalone: true
+    networks:
+      - animal
+
+  mysql-db:
+    container_name: mysql-db
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - animal
+
+  mongo-db:
+    container_name: mongo-db
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    networks:
+      - animal
+
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "8889:8889"
+    depends_on:
+      config-service:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+      mysql-db:
+        condition: service_started
+      axon-server:
+        condition: service_started
+    environment:
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+      MYSQL_URL: jdbc:mysql://mysql-db:3306/auth?createDatabaseIfNotExist=true
+      CONFIG_SERVER_URL: http://config-service:8888
+      DISCOVERY_SERVER_URL: http://discovery-service:8761/eureka
+      AXON_SERVER: axon-server:8124
+    networks:
+      - animal
+
+  gateway-service:
+    build:
+      context: ./gateway-service
+      dockerfile: Dockerfile
+    ports:
+      - "9000:9000"
+    depends_on:
+      config-service:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+    environment:
+      CONFIG_SERVER_URL: http://config-service:8888
+      DISCOVERY_SERVER_URL: http://discovery-service:8761/eureka
+    networks:
+      - animal
+
+  animal-service:
+    build:
+      context: ./animal-service
+      dockerfile: Dockerfile
+    depends_on:
+      config-service:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+      mongo-db:
+        condition: service_started
+      gateway-service:
+        condition: service_started
+      axon-server:
+        condition: service_started
+    environment:
+      CONFIG_SERVER_URL: http://config-service:8888
+      DISCOVERY_SERVER_URL: http://discovery-service:8761/eureka
+      MONGO_URI: mongodb://root:root@mongo-db:27017/animal-profile?authSource=admin
+      MONGO_DB: animal-profile
+      AXON_SERVER: axon-server:8124
+    networks:
+      - animal
+
+  application-service:
+    build:
+      context: ./application-service
+      dockerfile: Dockerfile
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      config-service:
+        condition: service_healthy
+      gateway-service:
+        condition: service_started
+      axon-server:
+        condition: service_started
+      mongo-db:
+        condition: service_started
+    environment:
+      CONFIG_SERVER_URL: http://config-service:8888
+      DISCOVERY_SERVER_URL: http://discovery-service:8761/eureka
+      MONGO_URI: mongodb://root:root@mongo-db:27017/application?authSource=admin
+      MONGO_DB: application
+      AXON_SERVER: axon-server:8124
+      GATEWAY_SERVICE_URL: http://gateway-service:9000
+    networks:
+      - animal
+
+  payment-service:
+    build:
+      context: ./payment-service
+      dockerfile: Dockerfile
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      config-service:
+        condition: service_healthy
+      mysql-db:
+        condition: service_started
+      gateway-service:
+        condition: service_started
+      axon-server:
+        condition: service_started
+    environment:
+      CONFIG_SERVER_URL: http://config-service:8888
+      DISCOVERY_SERVER_URL: http://discovery-service:8761/eureka
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+      LIQUIBASE_MYSQL_URL: jdbc:mysql://mysql-db:3306/payment_store?createDatabaseIfNotExist=true
+      MYSQL_URL: r2dbc:mysql://mysql-db:3306/payment_store?createDatabaseIfNotExist=true
+      STRIPE_SECRET_KEY: sk_test_4eC39HqLyjWDarjtT1zdp7dc
+      AXON_SERVER: axon-server:8124
+    networks:
+      - animal
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    depends_on:
+      config-service:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+      gateway-service:
+        condition: service_started
+      axon-server:
+        condition: service_started
+      mongo-db:
+        condition: service_started
+    environment:
+      CONFIG_SERVER_URL: http://config-service:8888
+      DISCOVERY_SERVER_URL: http://discovery-service:8761/eureka
+      MONGO_URI: mongodb://root:root@mongo-db:27017/user-profile?authSource=admin
+      MONGO_DB: user-profile
+      AXON_SERVER: axon-server:8124
+      GATEWAY_SERVICE_URL: http://gateway-service:9000
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+    networks:
+      - animal
+
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    networks:
+      - animal
+
+networks:
+  animal:
+    driver: bridge

@@ -52,7 +52,7 @@ const userProfileTemplate = {
     }
 };
 
-const baseUrl = "http://localhost:9000/user-service";
+const baseUrl = `http://localhost:9000/user-service`;
 
 export default function UserProfile({ login, setLogin, navigate }) {
     const [create, setCreate] = useState(false);
@@ -101,7 +101,6 @@ export default function UserProfile({ login, setLogin, navigate }) {
     }, [])
 
     const handleFieldChange = (field, name, value) => {
-        console.log(name + " " + value);
         setFormData(prevForm => {
             return {
                 ...prevForm,

@@ -4,7 +4,6 @@ import Pet from "./Pet";
 
 export default function FamilySituation({data, handleOnChange}){
     const branch = "familySituation";
-    console.log(data.pets);
     const [petList, setPetList] = useState(data.pets);
     const handlePetAddition = () => {
         const petId = new Date().getTime();

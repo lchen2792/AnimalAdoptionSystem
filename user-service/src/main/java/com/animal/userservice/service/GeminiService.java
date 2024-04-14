@@ -1,13 +1,11 @@
 package com.animal.userservice.service;
 
-import com.animal.common.constant.Constants;
 import com.animal.userservice.controller.model.AnimalProfileForMatch;
 import com.animal.userservice.controller.model.UserProfileForMatch;
 import com.animal.userservice.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;

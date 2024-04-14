@@ -11,7 +11,7 @@ export default function Application({ setLogin, login, navigate }) {
         if (login) {
             (async () => {
                 const response = await fetch(
-                    "http://localhost:9000/user-service/user-profiles/me",
+                    `http://localhost:9000/user-service/user-profiles/me`,
                     {
                         method: "GET",
                         headers: {
@@ -41,7 +41,7 @@ export default function Application({ setLogin, login, navigate }) {
 
     const handleSubmit = async () => {
 
-        const response = await fetch("http://localhost:9000/application-service/applications",
+        const response = await fetch(`http://localhost:9000/application-service/applications`,
             {
                 method: 'POST',
                 headers: {
@@ -75,7 +75,8 @@ export default function Application({ setLogin, login, navigate }) {
         );
 
     return (<div className="application-wrapper">
-        {login && userProfile && (!userProfile.customerId
+        {login && userProfile && (
+            userProfile.customerId
             ? <button onClick={handleSubmit}>Submit application</button>
             : <PaymentMethod {...{
                 login: login,

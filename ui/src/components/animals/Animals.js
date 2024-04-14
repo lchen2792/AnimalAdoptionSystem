@@ -24,7 +24,7 @@ export default function Animals() {
     useEffect(() => {
         (async () => {
             const response = await fetch(
-                "http://localhost:9000/animal-service/graphql",
+                `http://localhost:9000/animal-service/graphql`,
                 {
                     method: 'POST',
                     headers: {
@@ -51,8 +51,6 @@ export default function Animals() {
             setAnimalList(animalData.data.findAnimalProfilesByCriteria);
         })();
     }, []);
-
-    console.log(animalList);
 
     const animalCards = animalList.map(a => <AnimalCard key={a.animalProfileId} {...a} />);
 

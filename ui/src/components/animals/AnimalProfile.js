@@ -42,7 +42,7 @@ export default function AnimalProfile({login, navigate}) {
     useEffect(() => {
         (async () => {
             const response = await fetch(
-                "http://localhost:9000/animal-service/graphql",
+                `http://localhost:9000/animal-service/graphql`,
                 {
                     method: 'POST',
                     headers: {

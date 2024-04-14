@@ -25,7 +25,7 @@ export default function Match({ login, setLogin, userProfile, navigate }) {
         (async () => {
             const {identifications, ...userProfileForMatch} = userProfile;
             const response = await fetch(
-                "http://localhost:9000/user-service/match/animals",
+                `http://localhost:9000/user-service/match/animals`,
                 {
                     method: 'POST',
                     headers: {
@@ -55,7 +55,7 @@ export default function Match({ login, setLogin, userProfile, navigate }) {
             const matchPromises = matchIdList
                 .map(async matchId => {
                     const response = await fetch(
-                        "http://localhost:9000/animal-service/graphql",
+                        `http://localhost:9000/animal-service/graphql`,
                         {
                             method: 'POST',
                             headers: {
