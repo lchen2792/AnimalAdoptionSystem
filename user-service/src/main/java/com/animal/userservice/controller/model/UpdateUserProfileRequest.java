@@ -1,6 +1,7 @@
 package com.animal.userservice.controller.model;
 
 import com.animal.userservice.data.model.*;
+import com.animal.userservice.data.model.BasicInformation;
 import lombok.Builder;
 import lombok.Data;
 

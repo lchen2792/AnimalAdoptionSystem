@@ -152,7 +152,7 @@ export default function UserProfile({ login, setLogin, navigate }) {
         const userProfileId = await response.text();
 
         const userProfileResponse = await fetch(
-            `${baseUrl}/${userProfileId}`,
+            `${baseUrl}/user-profiles/${userProfileId}`,
             {
                 method: "GET",
                 headers: {
