@@ -1,0 +1,816 @@
+{
+	"info": {
+		"_postman_id": "9219f225-9bda-4fa7-bbcc-f876936c54b0",
+		"name": "AnimalAdoptionSystem",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25747547"
+	},
+	"item": [
+		{
+			"name": "AnimalService",
+			"item": [
+				{
+					"name": "finalAnimalProfileById",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query($id: ID!) {\r\n    findAnimalProfileById(animalProfileId: $id) {\r\n        animalProfileId,\r\n        status,\r\n        basicInformation {\r\n            age\r\n        }\r\n    }\r\n}",
+								"variables": "{\r\n    \"id\": \"7c986257-3036-47e6-b225-ee2e7901f29e\"\r\n}"
+							}
+						},
+						"url": {
+							"raw": "localhost:9000/animal-service/graphql",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"animal-service",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateAnimalProfile",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation($request: CreateAnimalProfileRequest!) {\r\n    createAnimalProfile(request: $request)\r\n}",
+								"variables": "{\r\n    \"request\": {\"basicInformation\":{\"species\":\"Dog\",\"breed\":\"Shiba Inu\",\"age\":2,\"gender\":\"male\",\"size\":\"SMALL\",\"neutered\":false},\"temperament\":{\"sociability\":\"MEDIUM\",\"activity\":\"MEDIUM\",\"trainability\":\"HIGH\",\"stability\":\"HIGH\",\"aggressivity\":\"MEDIUM\",\"independency\":\"MEDIUM\",\"adaptability\":\"HIGH\",\"preyDrive\":\"LOW\",\"communication\":\"HIGH\"},\"careRequirements\":{\"space\":\"MEDIUM\",\"socializing\":\"MEDIUM\",\"companionship\":\"HIGH\",\"exercise\":\"MEDIUM\",\"grooming\":\"LOW\",\"diet\":\"LOW\"}}}\r\n}"
+							}
+						},
+						"url": {
+							"raw": "localhost:9000/animal-service/graphql",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"animal-service",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteAnimalProfileById",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation($request: ID!) {\r\n    deleteAnimalProfileById(animalProfileId: $request)\r\n}",
+								"variables": "{\r\n    \"request\": \"85e7ccda-2d71-4053-b9ac-285714cb125c\"\r\n}"
+							}
+						},
+						"url": {
+							"raw": "localhost:9000/animal-service/graphql",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"animal-service",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateAnimalProfileById",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation ($request: UpdateAnimalProfileRequest!) {\r\n    updateAnimalProfileById(request: $request)\r\n}",
+								"variables": "{\r\n    \"request\": {\r\n        \"animalProfileId\": \"a819148f-00d3-4062-be86-dd54e3764822\",\r\n        \"basicInformation\": {\r\n            \"species\": \"dog\",\r\n            \"breed\": \"akita\",\r\n            \"age\": 10,\r\n            \"gender\": \"male\",\r\n            \"size\": \"LARGE\",\r\n            \"neutered\": false\r\n        },\r\n        \"temperament\": {\r\n            \"sociability\": \"HIGH\",\r\n            \"activity\":\"HIGH\",\r\n            \"trainability\":\"HIGH\",\r\n            \"stability\":\"HIGH\",\r\n            \"aggressivity\":\"LOW\",\r\n            \"independency\":\"MEDIUM\",\r\n            \"adaptability\":\"HIGH\",\r\n            \"preyDrive\":\"MEDIUM\",\r\n            \"communication\":\"HIGH\"\r\n        },\r\n        \"careRequirements\": {\r\n            \"space\": \"EXTRA_HIGH\",\r\n            \"socializing\": \"MEDIUM\",\r\n            \"companionship\": \"HIGH\",\r\n            \"exercise\": \"EXTRA_HIGH\",\r\n            \"grooming\": \"HIGH\",\r\n            \"diet\": \"HIGH\"\r\n        }\r\n    }\r\n}"
+							}
+						},
+						"url": {
+							"raw": "localhost:9000/animal-service/graphql",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"animal-service",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UploadAnimalMedia",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"contentType": "multipart/form-data",
+									"type": "file",
+									"src": "postman-cloud:///1eedd6a1-b451-4c50-a3da-14b15c639ea6"
+								},
+								{
+									"key": "",
+									"value": "image/jpeg",
+									"contentType": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:9000/animal-service/media/animals/1ebd10c0-e68f-4559-8a62-4b060cb875a6?mediaType=image/jpeg",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"animal-service",
+								"media",
+								"animals",
+								"1ebd10c0-e68f-4559-8a62-4b060cb875a6"
+							],
+							"query": [
+								{
+									"key": "mediaType",
+									"value": "image/jpeg"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteAnimalMediaById",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "",
+									"value": "image/jpeg",
+									"contentType": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:9000/animal-service/media/165eb40da314a340fb381ae03b/animals/c6fba6ec-3e135-4ed5-95f5-a52fc470ecb4",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"animal-service",
+								"media",
+								"165eb40da314a340fb381ae03b",
+								"animals",
+								"c6fba6ec-3e135-4ed5-95f5-a52fc470ecb4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findAnimalProfilesByCriteria",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query($request: FindAnimalProfilesByCriteriaRequest!) {\r\n    findAnimalProfilesByCriteria(request: $request) {\r\n        animalProfileId,\r\n        status,\r\n        basicInformation {\r\n            species,\r\n            breed,\r\n            age,\r\n            gender,\r\n            size,\r\n            neutered\r\n        },\r\n        temperament {\r\n            sociability,\r\n            activity,\r\n            trainability,\r\n            stability,\r\n            aggressivity,\r\n            independency,\r\n            adaptability,\r\n            preyDrive,\r\n            communication\r\n        },\r\n        careRequirements {\r\n            space,\r\n            socializing,\r\n            companionship,\r\n            exercise,\r\n            grooming,\r\n            diet\r\n        }\r\n    }\r\n}",
+								"variables": "{\r\n  \"request\": {\r\n    \r\n  }\r\n}"
+							}
+						},
+						"url": {
+							"raw": "localhost:9000/animal-service/graphql",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"animal-service",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAnimalMediaById",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:9000/animal-service/media/65ecf6fe0b17316a73f6a5a3",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"animal-service",
+								"media",
+								"65ecf6fe0b17316a73f6a5a3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PaymentService",
+			"item": [
+				{
+					"name": "validatePaymentMethod",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cardholderName\": \"JohnDoe\",\r\n    \"cardNumber\": \"4242424242424242\",\r\n    \"validThruYear\": 2026,\r\n    \"validThruMonth\": 12,\r\n    \"CVV\": 123\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9000/payment-service/validate-payment-method",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"payment-service",
+								"validate-payment-method"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "processPayment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9000/payment-service/process-payment/customer/cus_PlScjl57f0ye3K",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"payment-service",
+								"process-payment",
+								"customer",
+								"cus_PlScjl57f0ye3K"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "confirmPayment",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9000/payment-service/confirm-payment/pi_3Ovvgx2eZvKYlo2C19FIj7Lm",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"payment-service",
+								"confirm-payment",
+								"pi_3Ovvgx2eZvKYlo2C19FIj7Lm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "cancelPayment",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9000/payment-service/cancel-payment/pi_3Ov7oj2eZvKYlo2C1Th43zbf",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"payment-service",
+								"cancel-payment",
+								"pi_3Ov7oj2eZvKYlo2C1Th43zbf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "removePaymentMethod",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:9000/payment-service/remove-payment-method/customer/cus_PiHCIkJ4Vl6eti",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"payment-service",
+								"remove-payment-method",
+								"customer",
+								"cus_PiHCIkJ4Vl6eti"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UserService",
+			"item": [
+				{
+					"name": "updatePaymentDetail",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cardholderName\": \"JohnDoe\",\r\n    \"cardNumber\": \"4242424242424242\",\r\n    \"validThruYear\": 2036,\r\n    \"validThruMonth\": 12,\r\n    \"CVV\": 123\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9000/user-service/user-profiles/660f6b1cc9c15e2a1cd308fc/payment",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"user-service",
+								"user-profiles",
+								"660f6b1cc9c15e2a1cd308fc",
+								"payment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateIdentifications",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files",
+									"type": "file",
+									"src": "postman-cloud:///1eeb675c-33c4-4580-833c-ec46080520b0"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:9000/user-service/user-profiles/65ede86e934384501f5c00d9/id",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"user-service",
+								"user-profiles",
+								"65ede86e934384501f5c00d9",
+								"id"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "match",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"request\":{\r\n    },\r\n    \"userProfileForMatch\": {\r\n        \"livingSituation\":{\r\n            \"availableSpace\": \"EXTRA_HIGH\"\r\n        }\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9000/user-service/match/animals",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"user-service",
+								"match",
+								"animals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findUserProfiles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:9000/user-service/user-profiles?page=0&size=2",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"user-service",
+								"user-profiles"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findUserProfileById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:9000/user-service/user-profiles/660f6b1cc9c15e2a1cd308fc",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"user-service",
+								"user-profiles",
+								"660f6b1cc9c15e2a1cd308fc"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findUserProfileByAuthToken",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:9000/user-service/user-profiles/me",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"user-service",
+								"user-profiles",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createUserProfile",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"basicInformation\": {\r\n        \"name\": {\r\n            \"firstName\": \"John\",\r\n            \"middleName\": null,\r\n            \"lastName\": \"Doe\"\r\n        },\r\n        \"address\": {\r\n            \"addressLine1\": \"777 N. Mill Pond Street\",\r\n            \"addressLine2\": \"Unit 206\",\r\n            \"city\": \"New York\",\r\n            \"state\": \"NY\",\r\n            \"zipCode\": \"10025\"\r\n        },\r\n        \"contact\": {\r\n            \"phone\": \"1234567890\",\r\n            \"email\": \"johndoe123@real.com\"\r\n        }\r\n    },\r\n    \"livingSituation\": {\r\n        \"typeOfResidence\": \"apartment\",\r\n        \"availableSpace\": \"MEDIUM\"\r\n    },\r\n    \"familySituation\": {\r\n        \"numberOfAdults\": 2,\r\n        \"numberOfChildren\": 0,\r\n        \"pets\": [\r\n            {\r\n                \"petId\": 12345678910,\r\n                \"species\": \"Dog\",\r\n                \"breed\": \"German Shepherd Dog\",\r\n                \"age\": 2\r\n            },\r\n            {\r\n                \"petId\": 1712260132392,\r\n                \"species\": \"Rabbit\",\r\n                \"breed\": \"Flemish Giant Rabbit\",\r\n                \"age\": 1\r\n            }\r\n        ]\r\n    },\r\n    \"experience\": {\r\n        \"withAdoptingSpecies\": \"HIGH\",\r\n        \"withAdoptingBreed\": \"LOW\",\r\n        \"withAnimalAdoption\": \"HIGH\"\r\n    },\r\n    \"knowledge\": {\r\n        \"ofAdoptingSpecies\": \"HIGH\",\r\n        \"ofAdoptingBreed\": \"MEDIUM\",\r\n        \"ofAnimalAdoption\": \"HIGH\"\r\n    },\r\n    \"personality\": {\r\n        \"sociability\": \"MEDIUM\",\r\n        \"activity\": \"HIGH\",\r\n        \"stability\": \"HIGH\",\r\n        \"patience\": \"EXTRA_HIGH\",\r\n        \"motivation\": \"EXTRA_HIGH\",\r\n        \"adaptability\": \"EXTRA_HIGH\",\r\n        \"communication\": \"MEDIUM\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9000/user-service/user-profiles",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"user-service",
+								"user-profiles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteUserProfileById",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:9000/user-service/user-profiles/65ee729b30826c0ef944e644",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"user-service",
+								"user-profiles",
+								"65ee729b30826c0ef944e644"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ApplicationService",
+			"item": [
+				{
+					"name": "findApplications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:9000/application-service/applications?page=0&size=5",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"application-service",
+								"applications"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "submitApplication",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userProfileId\": \"660f6b1cc9c15e2a1cd308fc\",\r\n    \"animalProfileId\": \"21ac2f63-ac27-4c89-9e5f-a4926b9c3f4f\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9000/application-service/applications",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"application-service",
+								"applications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findApplicationById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:9000/application-service/8b1e6350-8585-445f-b28f-5bde5d6b6e95",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"application-service",
+								"8b1e6350-8585-445f-b28f-5bde5d6b6e95"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "notifyApplicationReview",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:9000/application-service/review/notification",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"application-service",
+								"review",
+								"notification"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reviewApplication",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"applicationId\": \"8b1e6350-8585-445f-b28f-5bde5d6b6e95\",\r\n    \"approve\": true,\r\n    \"comment\": \"sorry\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9000/application-service/review",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"application-service",
+								"review"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AuthService",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"johndoe@hotmail.com\",\r\n    \"name\": \"john doe\",\r\n    \"password\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8889/registration/user",
+							"host": [
+								"localhost"
+							],
+							"port": "8889",
+							"path": [
+								"registration",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "authenticate",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"johndoe@hotmail.com\",\r\n    \"password\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8889/auth",
+							"host": [
+								"localhost"
+							],
+							"port": "8889",
+							"path": [
+								"auth"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
