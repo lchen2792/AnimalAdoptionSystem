@@ -24,7 +24,7 @@ All services are dockerized and the User UI is served by Nginx.
 
 ### Documentation:
 - All APIs have been tested and documented in Postman. 
-- All RESTful APIs have been documented using OPEN API and Swagger.
+- All RESTful APIs have been documented using Open API and Swagger.
 
 ## Tech Stack
 ![TechStack](https://github.com/lchen2792/AnimalAdoptionSystem/assets/79290606/d2beb9d8-fac6-4ecc-98e0-e733b3c1a6b4)
