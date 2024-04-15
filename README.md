@@ -1,29 +1,29 @@
 # Animal Adoption System
 
 ## Overview
-### The backend system comprises four core microservices:
+### Backend four core microservices:
 - Animal service is a Spring MVC Async MongoDB application that supports dynamic queries through GraphQL at the API level and MongoDB's Criteria API at database level.
 - User service is a RESTful Spring MVC MySQL application handling user profile CRUD, files upload/download, and leverages Google Gemini API to match user profiles with animal profiles.
 - Application service is a RESTful Spring Webflux MongoDB application that serves as the orchestrator for distributed transactions about application submissions and reviews.
 - Payment service is a RESTful Spring Webflux MySQL application using the Stripe API for payment validation and processing.
 
-### Four additonal backend services:
+### Backend four additonal microservices:
 - Config service externalizes configurations to Git and supplies them to the backend services. 
 - Auth service, secured with Spring Security and JWT, holds and provide user auth data.
 - Discovery service uses Eureka to register and track the health of backend services.
 - Gateway Service provides role-based JWT authentication and authorization for User and Application services using auth data provided by Auth service. It also manages load balancing and routing using data provided by Discovery service.
 
 ### Backend microservice communication: 
-Communication between backend services is asynchronous, with most being handled by the Axon framework. In the User service, WebClient is also used for remote HTTP calls with internal and external APIs. To improve resilience of the system, those calls are protected with resilience4j's circuit breaker and retry.
+Communication between backend services is asynchronous, with most being done through the Evenbus provided by Axon framework. In User service, WebClient is also used for remote HTTP calls with internal and external APIs. To improve resilience, WebClient-based calls are protected with resilience4j's circuit breaker and retry.
 
 ### Frontend:
-On the font end, so far only User UI has been developed using ReactJS and CSS.
+On the font end, so far only User UI has been developed using ReactJS.
 
 ### Platform:
-All services have been dockerized including the Nginx-served User UI.
+All services are dockerized and the User UI is served by Nginx.
 
 ### Documentation:
-- All APIs have been documented in Postman and the script is made available. 
+- All APIs have been tested and documented in Postman. 
 - All RESTful APIs have been documented using OPEN API and Swagger.
 
 ## Tech Stack
@@ -35,8 +35,7 @@ All services have been dockerized including the Nginx-served User UI.
 ## Orchestration-based Saga
 ![Saga](https://github.com/lchen2792/AnimalAdoptionSystem/assets/79290606/e8aaf8e1-0ad7-4710-b485-bb2987643712)
 
-## Use Services
-
+## Start the services
 1. Get a Google Gemini Api key if you don't already have following https://ai.google.dev/tutorials/setup
 2. Run `./start.sh ${your Google Gemini Api key}` and wait for all services up and running
 3. You should be able to access:
