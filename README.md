@@ -18,10 +18,16 @@ Full-stack microservices developed using Spring Boot, Spring Cloud, MySQL, Mongo
 2. Run `./start.sh ${your Google Gemini Api key}` and wait for all services up and running
 3. You should be able to access:
     - Eureka Server at http://localhost:8761
+   ![image](https://github.com/lchen2792/AnimalAdoptionSystem/assets/79290606/64a4fd76-c794-47ec-9821-339f0d9240ec)
     - Swagger for auth service at http://localhost:8889/swagger-ui.html
+   ![image](https://github.com/lchen2792/AnimalAdoptionSystem/assets/79290606/2fa306b0-b268-4a74-adbf-668d94fd93f1)
     - Centralized Swagger for core services at http://localhost:9000/swagger-ui.html (navigate to each core service via the dropdown menu)
+   ![image](https://github.com/lchen2792/AnimalAdoptionSystem/assets/79290606/5ca52974-1263-4751-b9b4-d0609affe958)
     - Axon Server at http://localhost:8024
+   ![image](https://github.com/lchen2792/AnimalAdoptionSystem/assets/79290606/920064ea-ce8d-481c-9287-bb814744e144)
     - User UI at http://localhost:3000
+    ![image](https://github.com/lchen2792/AnimalAdoptionSystem/assets/79290606/ad2f2e17-f554-4451-8f32-8a010c923cac)
+
 4. Run `./pre-populate.sh` and wait for test data to persist
 6. You can choose either to log in using the test user credentials (email `johndoe@hotmail.com` and password `1234`) or to register a new user
 7. The User UI allows you to:
