@@ -1,15 +1,18 @@
-### Animal Adoption System
+# Animal Adoption System
 
-Architecture
-![Project3 flow - Flowchart](https://github.com/lchen2792/AnimalAdoptionSystem/assets/79290606/50bea282-f03d-4bae-a274-924c67178c67)
+## Overview
+Full-stack microservices developed using Spring Boot, Spring Cloud, MySQL, MongoDB, Axon and Docker 
 
-Tech Stack
-![Project3 flow - TechStack](https://github.com/lchen2792/AnimalAdoptionSystem/assets/79290606/d2beb9d8-fac6-4ecc-98e0-e733b3c1a6b4)
+## Tech Stack
+![TechStack](https://github.com/lchen2792/AnimalAdoptionSystem/assets/79290606/d2beb9d8-fac6-4ecc-98e0-e733b3c1a6b4)
 
-Orchestration-based Saga
-![Project3 flow - Page 3](https://github.com/lchen2792/AnimalAdoptionSystem/assets/79290606/e8aaf8e1-0ad7-4710-b485-bb2987643712)
+## Architecture
+![Architecture](https://github.com/lchen2792/AnimalAdoptionSystem/assets/79290606/50bea282-f03d-4bae-a274-924c67178c67)
 
-### Steps to use the services
+## Orchestration-based Saga
+![Saga](https://github.com/lchen2792/AnimalAdoptionSystem/assets/79290606/e8aaf8e1-0ad7-4710-b485-bb2987643712)
+
+## Use Services
 
 1. Get a Google Gemini Api key if you don't already have following https://ai.google.dev/tutorials/setup
 2. Run `./start.sh ${your Google Gemini Api key}` and wait for all services up and running
@@ -29,5 +32,5 @@ Orchestration-based Saga
    - Find your best animal matches (powered by Google Gemini API)
    - Browse all available animal profiles
    - Apply for adoption
-8. The Employee/Admin UI currently is not available. To use those endpoints, please import this [Postman script](https://github.com/lchen2792/AnimalAdoptionSystem/blob/main/AnimalAdoptionSystem.postman_collection.json) and refer to Swagger API docs if needed
+8. As you may notice, this User UI only uses a limited number of backend APIs. To use the rest, please import this [Postman script](https://github.com/lchen2792/AnimalAdoptionSystem/blob/main/AnimalAdoptionSystem.postman_collection.json) and refer to Swagger API docs if needed
 
