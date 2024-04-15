@@ -24,7 +24,7 @@ token=$(curl --location 'localhost:8889/registration/user' \
 
 sleep 5
 
-# crate test user profile
+# create test user profile
 userProfileId=$(curl --location 'localhost:9000/user-service/user-profiles' \
 --header "Authorization: Bearer ${token}" \
 --header 'Content-Type: application/json' \
