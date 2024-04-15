@@ -1,7 +1,30 @@
 # Animal Adoption System
 
 ## Overview
-Full-stack microservices developed using Spring Boot, Spring Cloud, MySQL, MongoDB, Axon and Docker 
+### The backend system comprises four core microservices:
+- Animal service is a Spring MVC Async MongoDB application that supports dynamic queries through GraphQL at the API level and MongoDB's Criteria API at database level.
+- User service is a RESTful Spring MVC MySQL application handling user profile CRUD, files upload/download, and leverages Google Gemini API to match user profiles with animal profiles.
+- Application service is a RESTful Spring Webflux MongoDB application that serves as the orchestrator for distributed transactions about application submissions and reviews.
+- Payment service is a RESTful Spring Webflux MySQL application using the Stripe API for payment validation and processing.
+
+### Four additonal backend services:
+- Config service externalizes configurations to Git and supplies them to the backend services. 
+- Auth service, secured with Spring Security and JWT, holds and provide user auth data.
+- Discovery service uses Eureka to register and track the health of backend services.
+- Gateway Service provides role-based JWT authentication and authorization for User and Application services using auth data provided by Auth service. It also manages load balancing and routing using data provided by Discovery service.
+
+### Backend microservice communication: 
+Communication between backend services is asynchronous, with most being handled by the Axon framework. In the User service, WebClient is also used for remote HTTP calls with internal and external APIs. To improve resilience of the system, those calls are protected with resilience4j's circuit breaker and retry.
+
+### Frontend:
+On the font end, so far only User UI has been developed using ReactJS and CSS.
+
+### Platform:
+All services have been dockerized including the Nginx-served User UI.
+
+### Documentation:
+- All APIs have been documented in Postman and the script is made available. 
+- All RESTful APIs have been documented using OPEN API and Swagger.
 
 ## Tech Stack
 ![TechStack](https://github.com/lchen2792/AnimalAdoptionSystem/assets/79290606/d2beb9d8-fac6-4ecc-98e0-e733b3c1a6b4)
@@ -38,5 +61,5 @@ Full-stack microservices developed using Spring Boot, Spring Cloud, MySQL, Mongo
    - Find your best animal matches (powered by Google Gemini API)
    - Browse all available animal profiles
    - Apply for adoption
-8. As you may notice, this User UI only uses a limited number of backend APIs. To use the rest, please import this [Postman script](https://github.com/lchen2792/AnimalAdoptionSystem/blob/main/AnimalAdoptionSystem.postman_collection.json) and refer to Swagger API docs if needed
+8. The User UI only uses a limited number of backend APIs. To interact with the rest, please import this [Postman script](https://github.com/lchen2792/AnimalAdoptionSystem/blob/main/AnimalAdoptionSystem.postman_collection.json) and refer to Swagger API docs if needed
 
